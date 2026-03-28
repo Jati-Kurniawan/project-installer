@@ -1,4 +1,4 @@
-import { Framework, Language, Template } from './enums';
+import { Framework, Language, TemplateType } from './enums';
 
 /**
  * Template definition with metadata and files
@@ -8,7 +8,7 @@ export interface TemplateDefinition {
   name: string;
   description: string;
   framework: Framework;
-  type: Template;
+  type: TemplateType;
   files: TemplateFile[];
   dependencies: DependencyMap;
   devDependencies: DependencyMap;

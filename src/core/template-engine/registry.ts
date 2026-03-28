@@ -1,4 +1,4 @@
-import { Framework, Template, TemplateDefinition } from '../../types';
+import { Framework, TemplateType, TemplateDefinition } from '../../types';
 
 /**
  * Template registry for managing and discovering templates
@@ -9,16 +9,16 @@ export class TemplateRegistry {
   /**
    * Gets available templates for a specific framework
    */
-  getAvailableTemplates(framework: Framework): Template[] {
-    const frameworkTemplates: Template[] = [];
+  getAvailableTemplates(framework: Framework): TemplateType[] {
+    const frameworkTemplates: TemplateType[] = [];
     
     // Placeholder implementation
     // In the future, this will load templates from the file system
     
     if (framework === Framework.NEXTJS) {
-      frameworkTemplates.push('minimal', 'feature-based', 'dashboard');
+      frameworkTemplates.push(TemplateType.MINIMAL, TemplateType.FEATURE_BASED, TemplateType.DASHBOARD);
     } else if (framework === Framework.REACT_VITE) {
-      frameworkTemplates.push('basic-spa', 'feature-based', 'component-driven');
+      frameworkTemplates.push(TemplateType.BASIC_SPA, TemplateType.FEATURE_BASED, TemplateType.COMPONENT_DRIVEN);
     }
     
     return frameworkTemplates;

@@ -1,4 +1,5 @@
 import { ProjectConfig, PackageManager, InstallationResult } from '../../types';
+import { execSync } from 'child_process';
 
 /**
  * Dependency installer for managing package installation
@@ -27,10 +28,39 @@ export class DependencyInstaller {
    * Detects available package managers on the system
    */
   async detectAvailablePackageManagers(): Promise<PackageManager[]> {
-    // Placeholder implementation
-    // In the future, this will check for npm, yarn, and pnpm availability
-    
-    return [PackageManager.NPM, PackageManager.YARN, PackageManager.PNPM];
+    const availableManagers: PackageManager[] = [];
+
+    // Check for npm
+    try {
+      execSync('npm --version', { stdio: 'ignore' });
+      availableManagers.push(PackageManager.NPM);
+    } catch {
+      // npm not available
+    }
+
+    // Check for yarn
+    try {
+      execSync('yarn --version', { stdio: 'ignore' });
+      availableManagers.push(PackageManager.YARN);
+    } catch {
+      // yarn not available
+    }
+
+    // Check for pnpm
+    try {
+      execSync('pnpm --version', { stdio: 'ignore' });
+      availableManagers.push(PackageManager.PNPM);
+    } catch {
+      // pnpm not available
+    }
+
+    // If no package managers found, default to npm (should always be available with Node.js)
+    if (availableManagers.length === 0) {
+      console.warn('⚠️  No package managers detected. Defaulting to npm.');
+      availableManagers.push(PackageManager.NPM);
+    }
+
+    return availableManagers;
   }
 
   /**

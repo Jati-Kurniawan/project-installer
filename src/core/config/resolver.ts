@@ -1,4 +1,4 @@
-import { ProjectConfig, UserSelections, Framework, Language, PackageManager } from '../../types';
+import { ProjectConfig, UserSelections, Framework, Language, PackageManager, TemplateType } from '../../types';
 
 /**
  * Configuration resolver that merges user selections into a coherent project configuration
@@ -40,7 +40,7 @@ export class ConfigurationResolver {
     const defaults: ProjectConfig = {
       projectName: config.projectName || 'my-project',
       framework: config.framework || Framework.NEXTJS,
-      template: config.template || 'minimal',
+      template: config.template || TemplateType.MINIMAL,
       language: config.language || Language.TYPESCRIPT,
       styling: {
         includeTailwind: config.styling?.includeTailwind ?? false,
