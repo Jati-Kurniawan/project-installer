@@ -33,11 +33,13 @@
   "dependencies": {
     "commander": "^11.1.0",
     "fs-extra": "^11.1.1",
+    "handlebars": "^4.7.9",
     "inquirer": "^9.2.12",
     "joi": "^18.1.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
+    "@types/handlebars": "^4.0.40",
     "@types/inquirer": "^9.0.7",
     "@types/jest": "^30.0.0",
     "@types/joi": "^17.2.2",

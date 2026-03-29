@@ -1,0 +1,37 @@
+{
+  "name": "{{projectName}}",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "{{#if options.devTools.includeESLint}}next lint{{else}}echo 'No linting configured'{{/if}}"{{#if options.devTools.includePrettier}},
+    "format": "prettier --write ."{{/if}}
+  },
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"{{#if options.styling.includeTailwind}},
+    "tailwindcss": "^3.3.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31"{{/if}}{{#if options.stateManagement.includeZustand}},
+    "zustand": "^4.4.0"{{/if}}{{#if options.dataFetching.includeTanStackQuery}},
+    "@tanstack/react-query": "^5.0.0"{{/if}}
+  },
+  "devDependencies": {
+    {{#if (eq language "typescript")}}
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^5.0.0"{{#if options.devTools.includeESLint}},{{/if}}
+    {{/if}}
+    {{#if options.devTools.includeESLint}}
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0"{{#if options.devTools.includePrettier}},{{/if}}
+    {{/if}}
+    {{#if options.devTools.includePrettier}}
+    "prettier": "^3.0.0"
+    {{/if}}
+  }
+}

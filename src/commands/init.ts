@@ -1,11 +1,13 @@
 import inquirer from 'inquirer';
 import { existsSync } from 'fs-extra';
 import { resolve } from 'path';
-import { CLIOptions, UserSelections } from '../types';
+import { CLIOptions, UserSelections, ProjectConfig, Framework, Language, TemplateType, PackageManager } from '../types';
 import { isValidProjectName, sanitizeProjectName } from '../utils/validation';
 import { isDirectoryEmpty, resolveProjectPath } from '../utils/file-system';
 import { PromptManager } from '../utils/prompts';
 import { DependencyInstaller } from '../core/project-generator/dependency-installer';
+import { ProjectGenerator } from '../core/project-generator/generator';
+import { TemplateRegistry } from '../core/template-engine/registry';
 
 export async function initCommand(projectName?: string, options: CLIOptions = {}): Promise<void> {
   console.log('🚀 Welcome to Starter CLI!');
@@ -57,7 +59,7 @@ export async function initCommand(projectName?: string, options: CLIOptions = {}
     const framework = await promptManager.selectFramework();
 
     // Step 3: Template selection
-    const template = await promptManager.selectTemplate(framework);
+    const templateType = await promptManager.selectTemplate(framework);
 
     // Step 4: Language selection
     const language = await promptManager.selectLanguage();
@@ -77,7 +79,7 @@ export async function initCommand(projectName?: string, options: CLIOptions = {}
     const userSelections: UserSelections = {
       projectName: finalProjectName,
       framework,
-      template,
+      template: templateType,
       language,
       includeTailwind: toolingOptions.includeTailwind,
       includeZustand: toolingOptions.includeZustand,
@@ -109,8 +111,86 @@ export async function initCommand(projectName?: string, options: CLIOptions = {}
       console.log('⏭️  Dependency installation will be skipped');
     }
     
-    console.log('\n🎯 Ready to start project generation!');
-    console.log('Template processing and file generation will be implemented in the next tasks.');
+    console.log('\n🚀 Starting project generation...');
+    
+    // Step 11: Initialize components
+    const projectGenerator = new ProjectGenerator();
+    const templateRegistry = new TemplateRegistry();
+    
+    // Step 12: Convert UserSelections to ProjectConfig
+    const projectConfig: ProjectConfig = {
+      projectName: userSelections.projectName,
+      framework: userSelections.framework,
+      template: userSelections.template,
+      language: userSelections.language,
+      styling: { includeTailwind: userSelections.includeTailwind },
+      stateManagement: { includeZustand: userSelections.includeZustand },
+      dataFetching: { includeTanStackQuery: userSelections.includeTanStackQuery },
+      devTools: { 
+        includeESLint: userSelections.includeESLint,
+        includePrettier: userSelections.includePrettier 
+      },
+      packageManager: userSelections.packageManager,
+      gitInit: userSelections.initializeGit,
+    };
+    
+    // Step 13: Load template
+    console.log('📋 Loading template...');
+    const templateDefinition = await templateRegistry.loadTemplate(userSelections.framework, userSelections.template);
+    
+    // Step 14: Generate project
+    console.log('🔨 Generating project files...');
+    const result = await projectGenerator.generateProject(projectConfig, templateDefinition);
+    
+    if (result.success) {
+      console.log(`\n✅ Project "${userSelections.projectName}" created successfully!`);
+      console.log(`📁 Location: ${result.projectPath}`);
+      console.log(`📄 Files created: ${result.filesCreated.length}`);
+      console.log(`⏱️  Generation time: ${result.duration}ms`);
+      
+      // Step 15: Install dependencies (if not skipped)
+      if (!options.skipInstall) {
+        console.log('\n📦 Installing dependencies...');
+        const installResult = await dependencyInstaller.installDependencies(projectConfig, result.projectPath);
+        
+        if (installResult.success) {
+          console.log(`✅ Dependencies installed successfully!`);
+          console.log(`📦 Packages installed: ${installResult.installedPackages.length}`);
+        } else {
+          console.log('⚠️  Dependency installation failed, but project was created successfully.');
+          console.log('You can install dependencies manually by running:');
+          console.log(`  cd ${userSelections.projectName}`);
+          console.log(`  ${userSelections.packageManager} install`);
+        }
+      }
+      
+      // Step 16: Display next steps
+      console.log('\n🎉 Your project is ready!');
+      console.log('\nNext steps:');
+      console.log(`  cd ${userSelections.projectName}`);
+      
+      if (options.skipInstall) {
+        console.log(`  ${userSelections.packageManager} install`);
+      }
+      
+      if (userSelections.framework === Framework.NEXTJS) {
+        console.log(`  ${userSelections.packageManager} run dev`);
+      } else {
+        console.log(`  ${userSelections.packageManager} run dev`);
+      }
+      
+      console.log('\nHappy coding! 🚀');
+      
+    } else {
+      console.error('\n❌ Project generation failed!');
+      if (result.errors.length > 0) {
+        console.error('Errors:');
+        result.errors.forEach(error => {
+          console.error(`  - ${error.message}`);
+        });
+      }
+      process.exit(1);
+    }
     
   } catch (error) {
     console.error('❌ Error during initialization:', error);

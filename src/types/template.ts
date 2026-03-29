@@ -1,6 +1,33 @@
 import { Framework, Language, TemplateType } from './enums';
 
 /**
+ * Template metadata from template.json
+ */
+export interface TemplateMetadata {
+  name: string;
+  description: string;
+  framework: Framework;
+  type: TemplateType;
+  version: string;
+  author: string;
+  supportedLanguages: Language[];
+  supportedOptions: {
+    styling: string[];
+    stateManagement: string[];
+    dataFetching: string[];
+    devTools: string[];
+  };
+  dependencies: {
+    base: DependencyMap;
+    conditional: ConditionalDependencies;
+  };
+  files: {
+    base: string[];
+    conditional: ConditionalFiles;
+  };
+}
+
+/**
  * Template definition with metadata and files
  */
 export interface TemplateDefinition {
@@ -9,10 +36,14 @@ export interface TemplateDefinition {
   description: string;
   framework: Framework;
   type: TemplateType;
+  version: string;
+  author: string;
+  supportedLanguages: Language[];
+  supportedOptions: ToolingOption[];
   files: TemplateFile[];
   dependencies: DependencyMap;
   devDependencies: DependencyMap;
-  supportedOptions: ToolingOption[];
+  templatePath: string;
 }
 
 /**
@@ -56,6 +87,20 @@ export interface TemplateContext {
  */
 export interface DependencyMap {
   [packageName: string]: string;
+}
+
+/**
+ * Conditional dependencies based on selected options
+ */
+export interface ConditionalDependencies {
+  [condition: string]: DependencyMap;
+}
+
+/**
+ * Conditional files based on selected options
+ */
+export interface ConditionalFiles {
+  [condition: string]: string[];
 }
 
 /**
