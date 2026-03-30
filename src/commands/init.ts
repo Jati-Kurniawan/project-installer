@@ -143,6 +143,10 @@ export async function initCommand(projectName?: string, options: CLIOptions = {}
     const result = await projectGenerator.generateProject(projectConfig, templateDefinition);
     
     if (result.success) {
+      // Step 14.5: Generate package.json with resolved dependencies
+      console.log('📦 Generating package.json with dependencies...');
+      await dependencyInstaller.generatePackageJson(projectConfig, templateDefinition, result.projectPath);
+      
       console.log(`\n✅ Project "${userSelections.projectName}" created successfully!`);
       console.log(`📁 Location: ${result.projectPath}`);
       console.log(`📄 Files created: ${result.filesCreated.length}`);

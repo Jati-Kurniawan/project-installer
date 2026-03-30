@@ -9,8 +9,9 @@ export class TemplateRegistry {
   private templates: Map<string, TemplateDefinition> = new Map();
   private templatesPath: string;
 
-  constructor(templatesPath: string = path.join(process.cwd(), 'templates')) {
-    this.templatesPath = templatesPath;
+  constructor(templatesPath?: string) {
+    // Default to templates directory relative to the project root
+    this.templatesPath = templatesPath || path.join(__dirname, '../../../templates');
   }
 
   /**
