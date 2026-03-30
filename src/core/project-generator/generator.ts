@@ -3,15 +3,18 @@ import * as path from 'path';
 import * as Handlebars from 'handlebars';
 import { ProjectConfig, TemplateDefinition, GenerationResult, DirectoryStructure, Framework, Language, TemplateContext } from '../../types';
 import { TemplateProcessor } from '../template-engine/processor';
+import { GitService } from '../git/git-service';
 
 /**
  * Project generator for creating project files and directory structure
  */
 export class ProjectGenerator {
   private templateProcessor: TemplateProcessor;
+  private gitService: GitService;
 
   constructor() {
     this.templateProcessor = new TemplateProcessor();
+    this.gitService = new GitService();
   }
 
   /**
@@ -59,6 +62,11 @@ export class ProjectGenerator {
 
       // Generate configuration files
       await this.generateConfigurationFiles(config, result);
+
+      // Initialize Git repository if requested
+      if (config.gitInit) {
+        await this.initializeGitRepository(config, result);
+      }
 
       result.duration = Date.now() - startTime;
     } catch (error) {
@@ -436,6 +444,41 @@ export default {
         await fs.writeFile(filePath, configFile.content, 'utf-8');
         result.filesCreated.push(configFile.name);
       }
+    }
+  }
+
+  /**
+   * Initializes Git repository and creates .gitignore
+   */
+  private async initializeGitRepository(
+    config: ProjectConfig,
+    result: GenerationResult
+  ): Promise<void> {
+    try {
+      // Create .gitignore file
+      const gitignoreResult = await this.gitService.createGitignore(result.projectPath, config);
+      if (gitignoreResult.success) {
+        result.filesCreated.push('.gitignore');
+      } else {
+        result.errors.push({
+          message: gitignoreResult.message,
+          code: 'GITIGNORE_FAILED',
+        });
+      }
+
+      // Initialize Git repository
+      const gitInitResult = await this.gitService.initializeRepository(result.projectPath);
+      if (!gitInitResult.success) {
+        result.errors.push({
+          message: gitInitResult.message,
+          code: 'GIT_INIT_FAILED',
+        });
+      }
+    } catch (error) {
+      result.errors.push({
+        message: `Git initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        code: 'GIT_SETUP_FAILED',
+      });
     }
   }
 

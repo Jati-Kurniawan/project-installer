@@ -135,15 +135,42 @@ export class TemplateRegistry {
         const relativePath = path.relative(basePath, itemPath);
         const content = await fs.readFile(itemPath, 'utf-8');
         
+        // Determine if file is conditional based on its name/extension
+        const { conditional, conditions } = this.determineFileConditions(relativePath);
+        
         files.push({
           path: relativePath,
           content,
           encoding: 'utf-8',
-          conditional: false,
-          conditions: [],
+          conditional,
+          conditions,
         });
       }
     }
+  }
+
+  /**
+   * Determines if a file should be conditional based on its path/name
+   */
+  private determineFileConditions(filePath: string): { conditional: boolean; conditions: string[] } {
+    const fileName = path.basename(filePath);
+    
+    // Language-specific files (TypeScript vs JavaScript)
+    if (fileName.includes('.tsx.hbs') || fileName.includes('.ts.hbs')) {
+      return { conditional: true, conditions: ['typescript'] };
+    }
+    
+    if (fileName.includes('.jsx.hbs') || fileName.includes('.js.hbs')) {
+      return { conditional: true, conditions: ['javascript'] };
+    }
+    
+    // Files that are specific to certain tooling options
+    if (fileName.includes('zustand') || filePath.includes('/stores/')) {
+      return { conditional: true, conditions: ['zustand'] };
+    }
+    
+    // Default: not conditional
+    return { conditional: false, conditions: [] };
   }
 
   /**

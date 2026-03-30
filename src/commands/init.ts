@@ -8,6 +8,8 @@ import { PromptManager } from '../utils/prompts';
 import { DependencyInstaller } from '../core/project-generator/dependency-installer';
 import { ProjectGenerator } from '../core/project-generator/generator';
 import { TemplateRegistry } from '../core/template-engine/registry';
+import { SuccessReporter } from '../core/reporting/success-reporter';
+import { GitService } from '../core/git/git-service';
 
 export async function initCommand(projectName?: string, options: CLIOptions = {}): Promise<void> {
   console.log('🚀 Welcome to Starter CLI!');
@@ -116,6 +118,8 @@ export async function initCommand(projectName?: string, options: CLIOptions = {}
     // Step 11: Initialize components
     const projectGenerator = new ProjectGenerator();
     const templateRegistry = new TemplateRegistry();
+    const successReporter = new SuccessReporter();
+    const gitService = new GitService();
     
     // Step 12: Convert UserSelections to ProjectConfig
     const projectConfig: ProjectConfig = {
@@ -147,20 +151,15 @@ export async function initCommand(projectName?: string, options: CLIOptions = {}
       console.log('📦 Generating package.json with dependencies...');
       await dependencyInstaller.generatePackageJson(projectConfig, templateDefinition, result.projectPath);
       
-      console.log(`\n✅ Project "${userSelections.projectName}" created successfully!`);
-      console.log(`📁 Location: ${result.projectPath}`);
-      console.log(`📄 Files created: ${result.filesCreated.length}`);
-      console.log(`⏱️  Generation time: ${result.duration}ms`);
+      let installResult;
+      let gitResult;
       
       // Step 15: Install dependencies (if not skipped)
       if (!options.skipInstall) {
         console.log('\n📦 Installing dependencies...');
-        const installResult = await dependencyInstaller.installDependencies(projectConfig, result.projectPath);
+        installResult = await dependencyInstaller.installDependencies(projectConfig, result.projectPath);
         
-        if (installResult.success) {
-          console.log(`✅ Dependencies installed successfully!`);
-          console.log(`📦 Packages installed: ${installResult.installedPackages.length}`);
-        } else {
+        if (!installResult.success) {
           console.log('⚠️  Dependency installation failed, but project was created successfully.');
           console.log('You can install dependencies manually by running:');
           console.log(`  cd ${userSelections.projectName}`);
@@ -168,22 +167,37 @@ export async function initCommand(projectName?: string, options: CLIOptions = {}
         }
       }
       
-      // Step 16: Display next steps
-      console.log('\n🎉 Your project is ready!');
-      console.log('\nNext steps:');
-      console.log(`  cd ${userSelections.projectName}`);
-      
-      if (options.skipInstall) {
-        console.log(`  ${userSelections.packageManager} install`);
+      // Step 16: Handle Git initialization if not already done by ProjectGenerator
+      if (userSelections.initializeGit) {
+        console.log('\n🔧 Setting up Git repository...');
+        
+        // Check if Git was already initialized by ProjectGenerator
+        const gitAlreadyInitialized = result.filesCreated.includes('.gitignore');
+        
+        if (!gitAlreadyInitialized) {
+          // Initialize Git manually if not done during project generation
+          const gitInitResult = await gitService.initializeRepository(result.projectPath);
+          const gitignoreResult = await gitService.createGitignore(result.projectPath, projectConfig);
+          
+          gitResult = {
+            success: gitInitResult.success && gitignoreResult.success,
+            message: gitInitResult.success ? gitInitResult.message : gitInitResult.message
+          };
+        } else {
+          gitResult = {
+            success: true,
+            message: 'Git repository initialized successfully.'
+          };
+        }
       }
       
-      if (userSelections.framework === Framework.NEXTJS) {
-        console.log(`  ${userSelections.packageManager} run dev`);
-      } else {
-        console.log(`  ${userSelections.packageManager} run dev`);
-      }
-      
-      console.log('\nHappy coding! 🚀');
+      // Step 17: Display comprehensive success summary
+      await successReporter.displaySuccessSummary(
+        projectConfig,
+        result,
+        installResult,
+        gitResult
+      );
       
     } else {
       console.error('\n❌ Project generation failed!');

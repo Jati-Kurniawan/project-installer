@@ -1,0 +1,42 @@
+/**
+ * Utility function to combine class names
+ */
+export function cn(...classes) {
+  return classes.filter(Boolean).join(' ')
+}
+
+/**
+ * Utility function to format numbers
+ */
+export function formatNumber(num) {
+  return new Intl.NumberFormat().format(num)
+}
+
+/**
+ * Utility function to capitalize first letter
+ */
+export function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+/**
+ * Utility function to debounce function calls
+ */
+export function debounce(func, wait) {
+  let timeout
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
+/**
+ * Utility function to generate random ID
+ */
+export function generateId() {
+  return Math.random().toString(36).substr(2, 9)
+}

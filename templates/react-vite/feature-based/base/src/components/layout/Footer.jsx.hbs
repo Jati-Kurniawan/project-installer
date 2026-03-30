@@ -1,0 +1,11 @@
+export default function Footer() {
+  return (
+    <footer className="{{#if tailwind}}bg-gray-50 border-t mt-auto{{else}}footer{{/if}}">
+      <div className="{{#if tailwind}}container mx-auto px-4 py-6{{else}}footer-content{{/if}}">
+        <div className="{{#if tailwind}}text-center text-gray-600{{else}}footer-text{{/if}}">
+          <p>&copy; 2024 {{projectName}}. Built with React + Vite and CLI Scaffolding Tool.</p>
+        </div>
+      </div>
+    </footer>
+  )
+}

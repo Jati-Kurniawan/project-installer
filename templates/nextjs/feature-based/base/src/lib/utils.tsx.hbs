@@ -1,0 +1,20 @@
+/**
+ * Utility function to combine class names
+ */
+export function cn(...classes: (string | undefined | null | false)[]): string {
+  return classes.filter(Boolean).join(' ')
+}
+
+/**
+ * Utility function to format numbers
+ */
+export function formatNumber(num: number): string {
+  return new Intl.NumberFormat().format(num)
+}
+
+/**
+ * Utility function to capitalize first letter
+ */
+export function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}

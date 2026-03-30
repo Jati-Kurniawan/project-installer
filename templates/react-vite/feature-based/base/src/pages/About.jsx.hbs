@@ -1,0 +1,73 @@
+import Button from '../components/ui/Button'
+import { Link } from 'react-router-dom'
+
+export default function About() {
+  return (
+    <div className="{{#if tailwind}}container mx-auto px-4 py-8{{else}}page{{/if}}">
+      <div className="{{#if tailwind}}max-w-3xl mx-auto{{else}}page-content{{/if}}">
+        <h1 className="{{#if tailwind}}text-4xl font-bold text-gray-900 mb-6{{else}}page-title{{/if}}">
+          About {{projectName}}
+        </h1>
+        
+        <div className="{{#if tailwind}}prose prose-lg max-w-none{{else}}content{{/if}}">
+          <p className="{{#if tailwind}}text-lg text-gray-600 mb-6{{else}}lead{{/if}}">
+            This application was generated using the CLI Scaffolding Tool, 
+            a powerful project generator that helps developers quickly bootstrap 
+            modern web applications with best practices and popular tools.
+          </p>
+          
+          <h2 className="{{#if tailwind}}text-2xl font-bold text-gray-900 mb-4{{else}}section-title{{/if}}">
+            Technology Stack
+          </h2>
+          
+          <div className="{{#if tailwind}}grid grid-cols-1 md:grid-cols-2 gap-6 mb-8{{else}}tech-grid{{/if}}">
+            <div className="{{#if tailwind}}bg-white p-6 rounded-lg border{{else}}tech-card{{/if}}">
+              <h3 className="{{#if tailwind}}font-semibold text-lg mb-2{{else}}tech-title{{/if}}">Frontend</h3>
+              <ul className="{{#if tailwind}}space-y-1 text-gray-600{{else}}tech-list{{/if}}">
+                <li>⚛️ React 18</li>
+                <li>⚡ Vite</li>
+                <li>🛣️ React Router</li>
+                {{#if typescript}}<li>📝 TypeScript</li>{{/if}}
+                {{#if tailwind}}<li>🎨 Tailwind CSS</li>{{/if}}
+              </ul>
+            </div>
+            
+            <div className="{{#if tailwind}}bg-white p-6 rounded-lg border{{else}}tech-card{{/if}}">
+              <h3 className="{{#if tailwind}}font-semibold text-lg mb-2{{else}}tech-title{{/if}}">Tools & Libraries</h3>
+              <ul className="{{#if tailwind}}space-y-1 text-gray-600{{else}}tech-list{{/if}}">
+                {{#if zustand}}<li>🐻 Zustand (State Management)</li>{{/if}}
+                {{#if tanstackQuery}}<li>🔄 TanStack Query (Data Fetching)</li>{{/if}}
+                {{#if eslint}}<li>🔍 ESLint (Code Quality)</li>{{/if}}
+                {{#if prettier}}<li>💅 Prettier (Code Formatting)</li>{{/if}}
+              </ul>
+            </div>
+          </div>
+          
+          <h2 className="{{#if tailwind}}text-2xl font-bold text-gray-900 mb-4{{else}}section-title{{/if}}">
+            Architecture
+          </h2>
+          
+          <p className="{{#if tailwind}}text-gray-600 mb-4{{else}}text{{/if}}">
+            This project follows a feature-based architecture pattern, where code is organized 
+            by features rather than by file types. This approach provides several benefits:
+          </p>
+          
+          <ul className="{{#if tailwind}}list-disc list-inside space-y-2 text-gray-600 mb-6{{else}}benefits-list{{/if}}">
+            <li>Better code organization and maintainability</li>
+            <li>Easier to locate and modify feature-specific code</li>
+            <li>Improved team collaboration on different features</li>
+            <li>Scalable structure for growing applications</li>
+          </ul>
+          
+          <div className="{{#if tailwind}}text-center{{else}}cta-section{{/if}}">
+            <Link to="/">
+              <Button size="lg">
+                ← Back to Home
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

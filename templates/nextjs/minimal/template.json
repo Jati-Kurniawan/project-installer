@@ -55,6 +55,9 @@
       "src/app/globals.css"
     ],
     "conditional": {
+      "tanstack-query": [
+        "src/components/providers/QueryProvider.{{ext}}.hbs"
+      ],
       "typescript": [
         "tsconfig.json",
         "next-env.d.ts"

@@ -61,6 +61,9 @@
       "src/lib/utils.{{ext}}.hbs"
     ],
     "conditional": {
+      "tanstack-query": [
+        "src/components/providers/QueryProvider.{{ext}}.hbs"
+      ],
       "typescript": [
         "tsconfig.json",
         "next-env.d.ts"

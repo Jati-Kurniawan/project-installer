@@ -1,8 +1,7 @@
 {{#if options.styling.includeTailwind}}import './globals.css'{{/if}}
 {{#if (eq language "typescript")}}import type { Metadata } from 'next'{{/if}}
 {{#if options.dataFetching.includeTanStackQuery}}
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useState } from 'react'
+import QueryProvider from '../components/providers/QueryProvider'
 {{/if}}
 
 {{#if (eq language "typescript")}}
@@ -17,23 +16,17 @@ export default function RootLayout({
 }{{#if (eq language "typescript")}}: {
   children: React.ReactNode
 }{{/if}}) {
-{{#if options.dataFetching.includeTanStackQuery}}
-  const [queryClient] = useState(() => new QueryClient())
-
   return (
     <html lang="en">
       <body>
-        <QueryClientProvider client={queryClient}>
+{{#if options.dataFetching.includeTanStackQuery}}
+        <QueryProvider>
           {children}
-        </QueryClientProvider>
+        </QueryProvider>
+{{else}}
+        {children}
+{{/if}}
       </body>
     </html>
   )
-{{else}}
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  )
-{{/if}}
 }
