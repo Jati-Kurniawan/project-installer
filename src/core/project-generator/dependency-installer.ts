@@ -2,6 +2,9 @@ import { ProjectConfig, PackageManager, InstallationResult, TemplateDefinition, 
 import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { ErrorHandler } from '../../utils/error-handler';
+import { NetworkOperation, SystemRequirement } from '../../types/errors';
+import { Logger } from '../../utils/logger';
 
 /**
  * Dependency installer for managing package installation
@@ -156,7 +159,19 @@ export class DependencyInstaller {
       // Check if package.json exists
       const packageJsonPath = path.join(projectPath, 'package.json');
       if (!await fs.pathExists(packageJsonPath)) {
-        throw new Error('package.json not found in project directory');
+        const error = ErrorHandler.createSystemError(
+          'package.json not found in project directory',
+          SystemRequirement.PACKAGE_MANAGER,
+          false
+        );
+        const recoveryContext = await ErrorHandler.handleError(error);
+        
+        result.success = false;
+        result.errors.push({
+          message: error.message,
+          code: error.code,
+        });
+        return result;
       }
 
       // Read package.json to get list of dependencies
@@ -168,11 +183,62 @@ export class DependencyInstaller {
 
       result.installedPackages = Object.keys(allDependencies);
 
-      // Install dependencies using selected package manager
-      await this.executePackageManagerInstall(config.packageManager, projectPath);
+      // Install dependencies using selected package manager with retry logic
+      let installSuccess = false;
+      let lastError: any = null;
+      
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          await this.executePackageManagerInstall(config.packageManager, projectPath);
+          installSuccess = true;
+          break;
+        } catch (error) {
+          lastError = error;
+          
+          const networkError = ErrorHandler.createNetworkError(
+            `Package installation failed (attempt ${attempt}/3): ${error instanceof Error ? error.message : 'Unknown error'}`,
+            NetworkOperation.PACKAGE_INSTALLATION,
+            attempt < 3 // recoverable if not the last attempt
+          );
+          
+          const recoveryContext = await ErrorHandler.handleError(networkError);
+          
+          if (recoveryContext.strategy === 'use_fallback' || attempt === 3) {
+            break;
+          }
+          
+          // Wait before retry (exponential backoff)
+          if (attempt < 3) {
+            const delay = 1000 * Math.pow(2, attempt - 1);
+            Logger.info(`Waiting ${delay}ms before retry...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
+        }
+      }
+
+      if (!installSuccess) {
+        result.success = false;
+        result.errors.push({
+          message: lastError instanceof Error ? lastError.message : 'Package installation failed after 3 attempts',
+          code: 'INSTALL_FAILED_MAX_RETRIES',
+        });
+        
+        // Provide fallback instructions
+        Logger.warn('Package installation failed. You can install dependencies manually later.');
+        Logger.info(`Run the following command in your project directory:`);
+        Logger.info(`  cd ${config.projectName}`);
+        Logger.info(`  ${this.getInstallCommand(config.packageManager)}`);
+        
+        return result;
+      }
 
       // Create lock file
-      await this.createLockFile(config.packageManager, projectPath);
+      try {
+        await this.createLockFile(config.packageManager, projectPath);
+      } catch (lockError) {
+        Logger.warn(`Lock file creation warning: ${lockError instanceof Error ? lockError.message : 'Unknown error'}`);
+        // Don't fail the entire installation for lock file issues
+      }
 
       result.success = true;
     } catch (error) {
@@ -279,13 +345,36 @@ export class DependencyInstaller {
       // pnpm not available
     }
 
-    // If no package managers found, default to npm (should always be available with Node.js)
+    // If no package managers found, handle the error properly
     if (availableManagers.length === 0) {
-      console.warn('⚠️  No package managers detected. Defaulting to npm.');
+      const systemError = ErrorHandler.createSystemError(
+        'No package managers detected. Please install Node.js which includes npm.',
+        SystemRequirement.PACKAGE_MANAGER,
+        false
+      );
+      await ErrorHandler.handleError(systemError);
+      
+      Logger.warn('⚠️  No package managers detected. Defaulting to npm (may not work).');
       availableManagers.push(PackageManager.NPM);
     }
 
     return availableManagers;
+  }
+
+  /**
+   * Gets the install command for a package manager
+   */
+  private getInstallCommand(packageManager: PackageManager): string {
+    switch (packageManager) {
+      case PackageManager.NPM:
+        return 'npm install';
+      case PackageManager.YARN:
+        return 'yarn install';
+      case PackageManager.PNPM:
+        return 'pnpm install';
+      default:
+        return 'npm install';
+    }
   }
 
   /**

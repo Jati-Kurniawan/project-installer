@@ -4,6 +4,9 @@ import * as Handlebars from 'handlebars';
 import { ProjectConfig, TemplateDefinition, GenerationResult, DirectoryStructure, Framework, Language, TemplateContext } from '../../types';
 import { TemplateProcessor } from '../template-engine/processor';
 import { GitService } from '../git/git-service';
+import { ErrorHandler } from '../../utils/error-handler';
+import { FileSystemOperation, TemplateProcessingStage } from '../../types/errors';
+import { Logger } from '../../utils/logger';
 
 /**
  * Project generator for creating project files and directory structure
@@ -30,38 +33,100 @@ export class ProjectGenerator {
     };
 
     const startTime = Date.now();
+    const cleanupActions: (() => Promise<void>)[] = [];
 
     try {
-      // Create project directory
-      await fs.ensureDir(result.projectPath);
+      // Create project directory with error handling
+      try {
+        await fs.ensureDir(result.projectPath);
+        cleanupActions.push(async () => {
+          if (await fs.pathExists(result.projectPath)) {
+            await fs.remove(result.projectPath);
+          }
+        });
+      } catch (error) {
+        const fsError = ErrorHandler.createFileSystemError(
+          `Failed to create project directory: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          FileSystemOperation.CREATE_DIRECTORY,
+          result.projectPath
+        );
+        const recoveryContext = await ErrorHandler.handleError(fsError);
+        
+        if (recoveryContext.strategy === 'cleanup_and_exit') {
+          result.success = false;
+          result.errors.push({
+            message: fsError.message,
+            code: fsError.code,
+          });
+          return result;
+        }
+      }
 
       // Create template context
       const context = this.templateProcessor.createTemplateContext(config);
 
       // Create directory structure first
-      await this.createProjectDirectoryStructure(config, template, result);
+      await this.createProjectDirectoryStructure(config, template, result, cleanupActions);
 
-      // Process and create all template files
+      // Process and create all template files with error handling
       for (const templateFile of template.files) {
-        const processedFile = await this.templateProcessor.processTemplateFile(templateFile, context);
-        
-        if (processedFile) {
-          const filePath = path.join(result.projectPath, processedFile.path);
+        try {
+          const processedFile = await this.templateProcessor.processTemplateFile(templateFile, context);
           
-          // Ensure directory exists
-          await fs.ensureDir(path.dirname(filePath));
+          if (processedFile) {
+            const filePath = path.join(result.projectPath, processedFile.path);
+            
+            // Ensure directory exists
+            await fs.ensureDir(path.dirname(filePath));
+            
+            // Write file with error handling
+            try {
+              await fs.writeFile(filePath, processedFile.content, processedFile.encoding as BufferEncoding);
+              result.filesCreated.push(processedFile.path);
+            } catch (writeError) {
+              const fsError = ErrorHandler.createFileSystemError(
+                `Failed to write file ${processedFile.path}: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`,
+                FileSystemOperation.WRITE_FILE,
+                filePath
+              );
+              const recoveryContext = await ErrorHandler.handleError(fsError);
+              
+              if (recoveryContext.strategy !== 'skip') {
+                result.errors.push({
+                  message: fsError.message,
+                  code: fsError.code,
+                  file: processedFile.path,
+                });
+              }
+            }
+          }
+        } catch (templateError) {
+          const tError = ErrorHandler.createTemplateError(
+            `Failed to process template file: ${templateError instanceof Error ? templateError.message : 'Unknown error'}`,
+            TemplateProcessingStage.FILE_GENERATION,
+            template.templatePath,
+            templateFile.path
+          );
+          const recoveryContext = await ErrorHandler.handleError(tError);
           
-          // Write file
-          await fs.writeFile(filePath, processedFile.content, processedFile.encoding as BufferEncoding);
-          result.filesCreated.push(processedFile.path);
+          if (recoveryContext.strategy === 'skip') {
+            Logger.warn(`Skipping problematic template file: ${templateFile.path}`);
+            continue;
+          } else {
+            result.errors.push({
+              message: tError.message,
+              code: tError.code,
+              file: templateFile.path,
+            });
+          }
         }
       }
 
       // Create conditional files based on selected options
-      await this.createConditionalFiles(config, template, result);
+      await this.createConditionalFiles(config, template, result, cleanupActions);
 
       // Generate configuration files
-      await this.generateConfigurationFiles(config, result);
+      await this.generateConfigurationFiles(config, result, cleanupActions);
 
       // Initialize Git repository if requested
       if (config.gitInit) {
@@ -69,12 +134,22 @@ export class ProjectGenerator {
       }
 
       result.duration = Date.now() - startTime;
+      
+      // If we have errors but some files were created, it's a partial success
+      if (result.errors.length > 0 && result.filesCreated.length > 0) {
+        Logger.warn(`Project created with ${result.errors.length} errors. Some files may be missing.`);
+      }
+      
     } catch (error) {
       result.success = false;
       result.errors.push({
         message: error instanceof Error ? error.message : 'Unknown error',
         code: 'GENERATION_FAILED',
       });
+      
+      // Execute cleanup on critical failure
+      Logger.error('Critical error during project generation. Cleaning up...');
+      await ErrorHandler.executeCleanup(cleanupActions);
     }
 
     return result;
@@ -86,27 +161,42 @@ export class ProjectGenerator {
   private async createConditionalFiles(
     config: ProjectConfig,
     template: TemplateDefinition,
-    result: GenerationResult
+    result: GenerationResult,
+    cleanupActions: (() => Promise<void>)[]
   ): Promise<void> {
-    // Load template metadata to get conditional files
-    const metadataPath = path.join(template.templatePath, 'template.json');
-    if (!await fs.pathExists(metadataPath)) {
-      return;
-    }
+    try {
+      // Load template metadata to get conditional files
+      const metadataPath = path.join(template.templatePath, 'template.json');
+      if (!await fs.pathExists(metadataPath)) {
+        return;
+      }
 
-    const metadata = await fs.readJson(metadataPath);
-    const conditionalFiles = metadata.files?.conditional || {};
+      const metadata = await fs.readJson(metadataPath);
+      const conditionalFiles = metadata.files?.conditional || {};
 
-    // Process conditional files based on configuration
-    const conditions = this.getActiveConditions(config);
-    
-    for (const condition of conditions) {
-      const files = conditionalFiles[condition];
-      if (files && Array.isArray(files)) {
-        for (const fileName of files) {
-          await this.createConditionalFile(fileName, condition, config, template, result);
+      // Process conditional files based on configuration
+      const conditions = this.getActiveConditions(config);
+      
+      for (const condition of conditions) {
+        const files = conditionalFiles[condition];
+        if (files && Array.isArray(files)) {
+          for (const fileName of files) {
+            await this.createConditionalFile(fileName, condition, config, template, result, cleanupActions);
+          }
         }
       }
+    } catch (error) {
+      const tError = ErrorHandler.createTemplateError(
+        `Failed to process conditional files: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        TemplateProcessingStage.CONDITIONAL_PROCESSING,
+        template.templatePath
+      );
+      await ErrorHandler.handleError(tError);
+      
+      result.errors.push({
+        message: tError.message,
+        code: tError.code,
+      });
     }
   }
 
@@ -118,7 +208,8 @@ export class ProjectGenerator {
     condition: string,
     config: ProjectConfig,
     template: TemplateDefinition,
-    result: GenerationResult
+    result: GenerationResult,
+    cleanupActions: (() => Promise<void>)[]
   ): Promise<void> {
     try {
       // Look for the file in variants directory first, then base
@@ -135,9 +226,32 @@ export class ProjectGenerator {
         const defaultContent = this.getDefaultFileContent(fileName, config);
         if (defaultContent) {
           const targetPath = path.join(result.projectPath, fileName);
-          await fs.ensureDir(path.dirname(targetPath));
-          await fs.writeFile(targetPath, defaultContent, 'utf-8');
-          result.filesCreated.push(fileName);
+          
+          try {
+            await fs.ensureDir(path.dirname(targetPath));
+            await fs.writeFile(targetPath, defaultContent, 'utf-8');
+            result.filesCreated.push(fileName);
+            
+            // Add cleanup action
+            cleanupActions.push(async () => {
+              if (await fs.pathExists(targetPath)) {
+                await fs.remove(targetPath);
+              }
+            });
+          } catch (writeError) {
+            const fsError = ErrorHandler.createFileSystemError(
+              `Failed to write default file ${fileName}: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`,
+              FileSystemOperation.WRITE_FILE,
+              targetPath
+            );
+            await ErrorHandler.handleError(fsError);
+            
+            result.errors.push({
+              message: fsError.message,
+              code: fsError.code,
+              file: fileName,
+            });
+          }
         }
         return;
       }
@@ -149,15 +263,55 @@ export class ProjectGenerator {
       // Process as template if it's a .hbs file
       let processedContent = content;
       if (sourceFile.endsWith('.hbs')) {
-        const template = Handlebars.compile(content);
-        processedContent = template(context);
+        try {
+          const template = Handlebars.compile(content);
+          processedContent = template(context);
+        } catch (templateError) {
+          const tError = ErrorHandler.createTemplateError(
+            `Failed to process template ${fileName}: ${templateError instanceof Error ? templateError.message : 'Unknown error'}`,
+            TemplateProcessingStage.VARIABLE_SUBSTITUTION,
+            template.templatePath,
+            fileName
+          );
+          await ErrorHandler.handleError(tError);
+          
+          result.errors.push({
+            message: tError.message,
+            code: tError.code,
+            file: fileName,
+          });
+          return;
+        }
       }
 
       // Write to target location
       const targetPath = path.join(result.projectPath, fileName);
-      await fs.ensureDir(path.dirname(targetPath));
-      await fs.writeFile(targetPath, processedContent, 'utf-8');
-      result.filesCreated.push(fileName);
+      
+      try {
+        await fs.ensureDir(path.dirname(targetPath));
+        await fs.writeFile(targetPath, processedContent, 'utf-8');
+        result.filesCreated.push(fileName);
+        
+        // Add cleanup action
+        cleanupActions.push(async () => {
+          if (await fs.pathExists(targetPath)) {
+            await fs.remove(targetPath);
+          }
+        });
+      } catch (writeError) {
+        const fsError = ErrorHandler.createFileSystemError(
+          `Failed to write conditional file ${fileName}: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`,
+          FileSystemOperation.WRITE_FILE,
+          targetPath
+        );
+        await ErrorHandler.handleError(fsError);
+        
+        result.errors.push({
+          message: fsError.message,
+          code: fsError.code,
+          file: fileName,
+        });
+      }
 
     } catch (error) {
       result.errors.push({
@@ -355,13 +509,36 @@ export default {
   private async createProjectDirectoryStructure(
     config: ProjectConfig,
     template: TemplateDefinition,
-    result: GenerationResult
+    result: GenerationResult,
+    cleanupActions: (() => Promise<void>)[]
   ): Promise<void> {
     const baseStructure = this.getBaseDirectoryStructure(config);
     
     for (const dir of baseStructure) {
       const dirPath = path.join(result.projectPath, dir);
-      await fs.ensureDir(dirPath);
+      
+      try {
+        await fs.ensureDir(dirPath);
+        
+        // Add cleanup action for each directory
+        cleanupActions.push(async () => {
+          if (await fs.pathExists(dirPath)) {
+            await fs.remove(dirPath);
+          }
+        });
+      } catch (error) {
+        const fsError = ErrorHandler.createFileSystemError(
+          `Failed to create directory ${dir}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          FileSystemOperation.CREATE_DIRECTORY,
+          dirPath
+        );
+        await ErrorHandler.handleError(fsError);
+        
+        result.errors.push({
+          message: fsError.message,
+          code: fsError.code,
+        });
+      }
     }
   }
 
@@ -397,7 +574,8 @@ export default {
    */
   private async generateConfigurationFiles(
     config: ProjectConfig,
-    result: GenerationResult
+    result: GenerationResult,
+    cleanupActions: (() => Promise<void>)[]
   ): Promise<void> {
     const configFiles: Array<{ name: string; content: string; condition?: boolean }> = [];
 
@@ -437,12 +615,35 @@ export default {
       });
     }
 
-    // Write configuration files
+    // Write configuration files with error handling
     for (const configFile of configFiles) {
       if (configFile.condition !== false) {
         const filePath = path.join(result.projectPath, configFile.name);
-        await fs.writeFile(filePath, configFile.content, 'utf-8');
-        result.filesCreated.push(configFile.name);
+        
+        try {
+          await fs.writeFile(filePath, configFile.content, 'utf-8');
+          result.filesCreated.push(configFile.name);
+          
+          // Add cleanup action
+          cleanupActions.push(async () => {
+            if (await fs.pathExists(filePath)) {
+              await fs.remove(filePath);
+            }
+          });
+        } catch (error) {
+          const fsError = ErrorHandler.createFileSystemError(
+            `Failed to write configuration file ${configFile.name}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            FileSystemOperation.WRITE_FILE,
+            filePath
+          );
+          await ErrorHandler.handleError(fsError);
+          
+          result.errors.push({
+            message: fsError.message,
+            code: fsError.code,
+            file: configFile.name,
+          });
+        }
       }
     }
   }

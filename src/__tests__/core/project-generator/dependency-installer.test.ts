@@ -74,7 +74,7 @@ describe('DependencyInstaller', () => {
     });
 
     it('should default to npm when no package managers are detected', async () => {
-      const mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation();
+      const mockLoggerWarn = jest.spyOn(require('../../../utils/logger').Logger, 'warn').mockImplementation();
       mockExecSync.mockImplementation(() => {
         throw new Error('Command not found');
       });
@@ -82,11 +82,11 @@ describe('DependencyInstaller', () => {
       const result = await dependencyInstaller.detectAvailablePackageManagers();
 
       expect(result).toEqual([PackageManager.NPM]);
-      expect(mockConsoleWarn).toHaveBeenCalledWith(
-        '⚠️  No package managers detected. Defaulting to npm.'
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        '⚠️  No package managers detected. Defaulting to npm (may not work).'
       );
 
-      mockConsoleWarn.mockRestore();
+      mockLoggerWarn.mockRestore();
     });
 
     it('should detect partial availability correctly', async () => {
