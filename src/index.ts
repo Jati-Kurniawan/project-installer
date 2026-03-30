@@ -1,3 +1,2 @@
-export * from './commands/init';
-export * from './types';
-export * from './utils';
+// Main library entry point
+export * from './lib';
