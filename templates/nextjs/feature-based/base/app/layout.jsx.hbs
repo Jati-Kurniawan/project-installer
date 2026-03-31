@@ -1,0 +1,28 @@
+import { Inter } from 'next/font/google';
+import './globals.css';
+{{#if options.dataFetching.includeTanStackQuery}}
+import QueryProvider from '../components/providers/QueryProvider';
+{{/if}}
+
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata = {
+  title: '{{projectName}}',
+  description: 'A feature-based Next.js application',
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>
+        {{#if options.dataFetching.includeTanStackQuery}}
+        <QueryProvider>
+          {children}
+        </QueryProvider>
+        {{else}}
+        {children}
+        {{/if}}
+      </body>
+    </html>
+  );
+}

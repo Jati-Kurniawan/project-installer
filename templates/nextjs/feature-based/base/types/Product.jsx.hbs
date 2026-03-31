@@ -1,0 +1,145 @@
+// Product-related type definitions (JSDoc comments for JavaScript)
+
+/**
+ * @typedef {Object} Product
+ * @property {number} id
+ * @property {string} name
+ * @property {string} slug
+ * @property {string} description
+ * @property {string} [shortDescription]
+ * @property {number} price
+ * @property {number} [comparePrice]
+ * @property {string} sku
+ * @property {string} [barcode]
+ * @property {boolean} trackQuantity
+ * @property {number} [quantity]
+ * @property {number} [weight]
+ * @property {ProductDimensions} [dimensions]
+ * @property {ProductImage[]} images
+ * @property {ProductCategory} category
+ * @property {ProductTag[]} tags
+ * @property {ProductVariant[]} variants
+ * @property {ProductStatus} status
+ * @property {boolean} featured
+ * @property {string} createdAt
+ * @property {string} updatedAt
+ * @property {ProductMetadata} metadata
+ */
+
+/**
+ * @typedef {Object} ProductDimensions
+ * @property {number} length
+ * @property {number} width
+ * @property {number} height
+ * @property {'cm' | 'in'} unit
+ */
+
+/**
+ * @typedef {Object} ProductImage
+ * @property {number} id
+ * @property {string} url
+ * @property {string} alt
+ * @property {number} position
+ */
+
+/**
+ * @typedef {Object} ProductCategory
+ * @property {number} id
+ * @property {string} name
+ * @property {string} slug
+ * @property {string} [description]
+ * @property {string} [image]
+ * @property {number} [parentId]
+ */
+
+/**
+ * @typedef {Object} ProductTag
+ * @property {number} id
+ * @property {string} name
+ * @property {string} slug
+ */
+
+/**
+ * @typedef {Object} ProductVariant
+ * @property {number} id
+ * @property {string} name
+ * @property {number} price
+ * @property {string} sku
+ * @property {number} quantity
+ * @property {VariantOption[]} options
+ */
+
+/**
+ * @typedef {Object} VariantOption
+ * @property {string} name
+ * @property {string} value
+ */
+
+/**
+ * @typedef {Object} ProductMetadata
+ * @property {number} views
+ * @property {number} sales
+ * @property {number} rating
+ * @property {number} reviewCount
+ * @property {string} [seoTitle]
+ * @property {string} [seoDescription]
+ */
+
+/**
+ * @typedef {'active' | 'draft' | 'archived'} ProductStatus
+ */
+
+/**
+ * @typedef {Object} CreateProductRequest
+ * @property {string} name
+ * @property {string} description
+ * @property {string} [shortDescription]
+ * @property {number} price
+ * @property {number} [comparePrice]
+ * @property {string} sku
+ * @property {number} categoryId
+ * @property {number[]} [tagIds]
+ * @property {Omit<ProductImage, 'id'>[]} [images]
+ * @property {ProductStatus} status
+ * @property {boolean} [featured]
+ */
+
+/**
+ * @typedef {Object} UpdateProductRequest
+ * @property {string} [name]
+ * @property {string} [description]
+ * @property {string} [shortDescription]
+ * @property {number} [price]
+ * @property {number} [comparePrice]
+ * @property {string} [sku]
+ * @property {number} [categoryId]
+ * @property {number[]} [tagIds]
+ * @property {ProductStatus} [status]
+ * @property {boolean} [featured]
+ */
+
+/**
+ * @typedef {Object} ProductsListResponse
+ * @property {Product[]} products
+ * @property {number} total
+ * @property {number} page
+ * @property {number} limit
+ * @property {ProductCategory[]} categories
+ * @property {ProductTag[]} tags
+ */
+
+/**
+ * @typedef {Object} ProductStatsResponse
+ * @property {number} totalProducts
+ * @property {number} activeProducts
+ * @property {number} draftProducts
+ * @property {number} totalSales
+ * @property {number} totalRevenue
+ */
+
+// Product status constants
+export const ProductStatus = {
+  ACTIVE: 'active',
+  DRAFT: 'draft',
+  ARCHIVED: 'archived',
+};

@@ -1,0 +1,56 @@
+export default function ContentSection({ posts = [] }) {
+  const defaultPosts = [
+    {
+      id: 1,
+      title: 'Getting Started with Next.js',
+      excerpt: 'Learn how to build modern web applications with Next.js and React.',
+      date: '2024-01-15',
+      author: 'John Doe'
+    },
+    {
+      id: 2,
+      title: 'Feature-Based Architecture',
+      excerpt: 'Organize your code for better maintainability and scalability.',
+      date: '2024-01-10',
+      author: 'Jane Smith'
+    },
+    {
+      id: 3,
+      title: 'TypeScript Best Practices',
+      excerpt: 'Write better, more maintainable code with TypeScript.',
+      date: '2024-01-05',
+      author: 'Bob Johnson'
+    }
+  ];
+
+  const displayPosts = posts.length > 0 ? posts : defaultPosts;
+
+  return (
+    <section className="py-16">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8">Latest Blog Posts</h2>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {displayPosts.map((post) => (
+            <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-2 text-gray-900">
+                  {post.title}
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  {post.excerpt}
+                </p>
+                <div className="flex justify-between items-center text-sm text-gray-500">
+                  <span>By {post.author}</span>
+                  <time dateTime={post.date}>
+                    {new Date(post.date).toLocaleDateString()}
+                  </time>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

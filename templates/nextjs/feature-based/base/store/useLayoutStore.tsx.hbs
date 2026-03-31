@@ -1,0 +1,123 @@
+{{#if options.stateManagement.includeZustand}}
+import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
+
+interface LayoutState {
+  sidebarOpen: boolean;
+  theme: 'light' | 'dark';
+  loading: boolean;
+}
+
+interface LayoutActions {
+  toggleSidebar: () => void;
+  setSidebarOpen: (open: boolean) => void;
+  setTheme: (theme: 'light' | 'dark') => void;
+  setLoading: (loading: boolean) => void;
+  reset: () => void;
+}
+
+type LayoutStore = LayoutState & LayoutActions;
+
+const initialState: LayoutState = {
+  sidebarOpen: false,
+  theme: 'light',
+  loading: false,
+};
+
+export const useLayoutStore = create<LayoutStore>()(
+  devtools(
+    (set, get) => ({
+      ...initialState,
+      
+      toggleSidebar: () => set(
+        (state) => ({ sidebarOpen: !state.sidebarOpen }),
+        false,
+        'toggleSidebar'
+      ),
+      
+      setSidebarOpen: (open) => set(
+        { sidebarOpen: open },
+        false,
+        'setSidebarOpen'
+      ),
+      
+      setTheme: (theme) => set(
+        { theme },
+        false,
+        'setTheme'
+      ),
+      
+      setLoading: (loading) => set(
+        { loading },
+        false,
+        'setLoading'
+      ),
+      
+      reset: () => set(
+        initialState,
+        false,
+        'reset'
+      ),
+    }),
+    {
+      name: 'layout-store',
+    }
+  )
+);
+
+export default useLayoutStore;
+{{else}}
+// Layout state management without Zustand
+// You can implement this using React Context or other state management solutions
+
+import { useState, useCallback } from 'react';
+
+interface LayoutState {
+  sidebarOpen: boolean;
+  theme: 'light' | 'dark';
+  loading: boolean;
+}
+
+export function useLayoutStore() {
+  const [state, setState] = useState<LayoutState>({
+    sidebarOpen: false,
+    theme: 'light',
+    loading: false,
+  });
+  
+  const toggleSidebar = useCallback(() => {
+    setState(prev => ({ ...prev, sidebarOpen: !prev.sidebarOpen }));
+  }, []);
+  
+  const setSidebarOpen = useCallback((open: boolean) => {
+    setState(prev => ({ ...prev, sidebarOpen: open }));
+  }, []);
+  
+  const setTheme = useCallback((theme: 'light' | 'dark') => {
+    setState(prev => ({ ...prev, theme }));
+  }, []);
+  
+  const setLoading = useCallback((loading: boolean) => {
+    setState(prev => ({ ...prev, loading }));
+  }, []);
+  
+  const reset = useCallback(() => {
+    setState({
+      sidebarOpen: false,
+      theme: 'light',
+      loading: false,
+    });
+  }, []);
+  
+  return {
+    ...state,
+    toggleSidebar,
+    setSidebarOpen,
+    setTheme,
+    setLoading,
+    reset,
+  };
+}
+
+export default useLayoutStore;
+{{/if}}

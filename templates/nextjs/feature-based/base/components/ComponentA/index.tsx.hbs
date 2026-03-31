@@ -1,0 +1,15 @@
+interface ComponentAProps {
+  title?: string;
+  className?: string;
+}
+
+export default function ComponentA({ title = "Component A", className = "" }: ComponentAProps) {
+  return (
+    <div className={`p-4 border rounded-lg ${className}`}>
+      <h3 className="text-lg font-semibold mb-2">{title}</h3>
+      <p className="text-gray-600">
+        This is Component A. Replace this content with your actual component logic.
+      </p>
+    </div>
+  );
+}

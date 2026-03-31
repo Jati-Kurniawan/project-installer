@@ -1,0 +1,100 @@
+{{#if options.stateManagement.includeZustand}}
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
+
+const initialState = {
+  user: null,
+  isAuthenticated: false,
+  loading: false,
+};
+
+export const useUserStore = create(
+  devtools(
+    persist(
+      (set, get) => ({
+        ...initialState,
+        
+        setUser: (user) => set(
+          { user, isAuthenticated: true },
+          false,
+          'setUser'
+        ),
+        
+        clearUser: () => set(
+          { user: null, isAuthenticated: false },
+          false,
+          'clearUser'
+        ),
+        
+        setLoading: (loading) => set(
+          { loading },
+          false,
+          'setLoading'
+        ),
+        
+        updateUser: (updates) => set(
+          (state) => ({
+            user: state.user ? { ...state.user, ...updates } : null
+          }),
+          false,
+          'updateUser'
+        ),
+      }),
+      {
+        name: 'user-store',
+        partialize: (state) => ({
+          user: state.user,
+          isAuthenticated: state.isAuthenticated,
+        }),
+      }
+    ),
+    {
+      name: 'user-store',
+    }
+  )
+);
+
+export default useUserStore;
+{{else}}
+// User state management without Zustand
+// You can implement this using React Context or other state management solutions
+
+import { useState, useCallback } from 'react';
+
+export function useUserStore() {
+  const [state, setState] = useState({
+    user: null,
+    isAuthenticated: false,
+    loading: false,
+  });
+  
+  const setUser = useCallback((user) => {
+    setState(prev => ({ ...prev, user, isAuthenticated: true }));
+  }, []);
+  
+  const clearUser = useCallback(() => {
+    setState(prev => ({ ...prev, user: null, isAuthenticated: false }));
+  }, []);
+  
+  const setLoading = useCallback((loading) => {
+    setState(prev => ({ ...prev, loading }));
+  }, []);
+  
+  const updateUser = useCallback((updates) => {
+    setState(prev => ({
+      ...prev,
+      user: prev.user ? { ...prev.user, ...updates } : null
+    }));
+  }, []);
+  
+  return {
+    ...state,
+    setUser,
+    clearUser,
+    setLoading,
+    updateUser,
+  };
+}
+
+export default useUserStore;
+{{/if}}

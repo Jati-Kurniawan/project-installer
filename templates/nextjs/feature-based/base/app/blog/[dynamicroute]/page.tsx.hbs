@@ -1,0 +1,39 @@
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+
+interface PageProps {
+  params: {
+    dynamicroute: string;
+  };
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { dynamicroute } = params;
+  
+  return {
+    title: `${dynamicroute} - Blog - {{projectName}}`,
+    description: `Blog post about ${dynamicroute}`,
+  };
+}
+
+export default function DynamicBlogPage({ params }: PageProps) {
+  const { dynamicroute } = params;
+  
+  // You can add logic here to fetch blog post data
+  // If post doesn't exist, call notFound()
+  
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-4xl font-bold mb-6">Blog Post: {dynamicroute}</h1>
+      <div className="prose max-w-none">
+        <p className="text-gray-600 mb-4">
+          This is a dynamic blog post page for: <strong>{dynamicroute}</strong>
+        </p>
+        <p>
+          Replace this content with your actual blog post content.
+          You can fetch data based on the dynamic route parameter.
+        </p>
+      </div>
+    </div>
+  );
+}

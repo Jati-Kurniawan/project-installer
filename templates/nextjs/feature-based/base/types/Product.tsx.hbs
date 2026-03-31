@@ -1,0 +1,129 @@
+// Product-related type definitions
+
+export interface Product {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  shortDescription?: string;
+  price: number;
+  comparePrice?: number;
+  sku: string;
+  barcode?: string;
+  trackQuantity: boolean;
+  quantity?: number;
+  weight?: number;
+  dimensions?: ProductDimensions;
+  images: ProductImage[];
+  category: ProductCategory;
+  tags: ProductTag[];
+  variants: ProductVariant[];
+  status: ProductStatus;
+  featured: boolean;
+  createdAt: string;
+  updatedAt: string;
+  metadata: ProductMetadata;
+}
+
+export interface ProductDimensions {
+  length: number;
+  width: number;
+  height: number;
+  unit: 'cm' | 'in';
+}
+
+export interface ProductImage {
+  id: number;
+  url: string;
+  alt: string;
+  position: number;
+}
+
+export interface ProductCategory {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  parentId?: number;
+}
+
+export interface ProductTag {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+export interface ProductVariant {
+  id: number;
+  name: string;
+  price: number;
+  sku: string;
+  quantity: number;
+  options: VariantOption[];
+}
+
+export interface VariantOption {
+  name: string;
+  value: string;
+}
+
+export interface ProductMetadata {
+  views: number;
+  sales: number;
+  rating: number;
+  reviewCount: number;
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
+export enum ProductStatus {
+  ACTIVE = 'active',
+  DRAFT = 'draft',
+  ARCHIVED = 'archived',
+}
+
+export interface CreateProductRequest {
+  name: string;
+  description: string;
+  shortDescription?: string;
+  price: number;
+  comparePrice?: number;
+  sku: string;
+  categoryId: number;
+  tagIds?: number[];
+  images?: Omit<ProductImage, 'id'>[];
+  status: ProductStatus;
+  featured?: boolean;
+}
+
+export interface UpdateProductRequest {
+  name?: string;
+  description?: string;
+  shortDescription?: string;
+  price?: number;
+  comparePrice?: number;
+  sku?: string;
+  categoryId?: number;
+  tagIds?: number[];
+  status?: ProductStatus;
+  featured?: boolean;
+}
+
+// Product-related API responses
+export interface ProductsListResponse {
+  products: Product[];
+  total: number;
+  page: number;
+  limit: number;
+  categories: ProductCategory[];
+  tags: ProductTag[];
+}
+
+export interface ProductStatsResponse {
+  totalProducts: number;
+  activeProducts: number;
+  draftProducts: number;
+  totalSales: number;
+  totalRevenue: number;
+}

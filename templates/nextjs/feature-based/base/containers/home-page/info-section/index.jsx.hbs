@@ -1,0 +1,50 @@
+import ComponentA from '../../../components/ComponentA';
+
+export default function InfoSection() {
+  const features = [
+    {
+      title: 'Feature-Based Architecture',
+      description: 'Organized code structure that scales with your project',
+      icon: '🏗️'
+    },
+    {
+      title: 'Modern Stack',
+      description: 'Built with Next.js 14, React 18, and TypeScript',
+      icon: '⚡'
+    },
+    {
+      title: 'Developer Experience',
+      description: 'Hot reload, TypeScript support, and modern tooling',
+      icon: '🛠️'
+    }
+  ];
+
+  return (
+    <section className="py-20 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Why Choose {{projectName}}?
+          </h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Built with modern best practices and a focus on developer experience
+          </p>
+        </div>
+        
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
+          {features.map((feature, index) => (
+            <div key={index} className="text-center">
+              <div className="text-4xl mb-4">{feature.icon}</div>
+              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+              <p className="text-gray-600">{feature.description}</p>
+            </div>
+          ))}
+        </div>
+        
+        <div className="max-w-2xl mx-auto">
+          <ComponentA title="Sample Component" className="bg-white shadow-sm" />
+        </div>
+      </div>
+    </section>
+  );
+}

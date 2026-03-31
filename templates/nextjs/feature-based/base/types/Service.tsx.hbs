@@ -1,0 +1,144 @@
+// Service-related type definitions
+
+export interface Service {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  shortDescription?: string;
+  price: ServicePrice;
+  duration?: number; // in minutes
+  category: ServiceCategory;
+  tags: ServiceTag[];
+  features: ServiceFeature[];
+  status: ServiceStatus;
+  featured: boolean;
+  createdAt: string;
+  updatedAt: string;
+  metadata: ServiceMetadata;
+}
+
+export interface ServicePrice {
+  amount: number;
+  currency: string;
+  type: PriceType;
+  billingCycle?: BillingCycle;
+}
+
+export interface ServiceCategory {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+}
+
+export interface ServiceTag {
+  id: number;
+  name: string;
+  slug: string;
+  color?: string;
+}
+
+export interface ServiceFeature {
+  id: number;
+  name: string;
+  description?: string;
+  included: boolean;
+}
+
+export interface ServiceMetadata {
+  views: number;
+  bookings: number;
+  rating: number;
+  reviewCount: number;
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
+export enum ServiceStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  DRAFT = 'draft',
+}
+
+export enum PriceType {
+  FIXED = 'fixed',
+  HOURLY = 'hourly',
+  CUSTOM = 'custom',
+}
+
+export enum BillingCycle {
+  ONE_TIME = 'one_time',
+  MONTHLY = 'monthly',
+  YEARLY = 'yearly',
+  WEEKLY = 'weekly',
+}
+
+export interface CreateServiceRequest {
+  name: string;
+  description: string;
+  shortDescription?: string;
+  price: ServicePrice;
+  duration?: number;
+  categoryId: number;
+  tagIds?: number[];
+  features?: Omit<ServiceFeature, 'id'>[];
+  status: ServiceStatus;
+  featured?: boolean;
+}
+
+export interface UpdateServiceRequest {
+  name?: string;
+  description?: string;
+  shortDescription?: string;
+  price?: ServicePrice;
+  duration?: number;
+  categoryId?: number;
+  tagIds?: number[];
+  features?: ServiceFeature[];
+  status?: ServiceStatus;
+  featured?: boolean;
+}
+
+export interface ServiceBooking {
+  id: number;
+  serviceId: number;
+  service: Service;
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
+  scheduledAt: string;
+  duration: number;
+  totalPrice: number;
+  status: BookingStatus;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export enum BookingStatus {
+  PENDING = 'pending',
+  CONFIRMED = 'confirmed',
+  IN_PROGRESS = 'in_progress',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
+}
+
+// Service-related API responses
+export interface ServicesListResponse {
+  services: Service[];
+  total: number;
+  page: number;
+  limit: number;
+  categories: ServiceCategory[];
+  tags: ServiceTag[];
+}
+
+export interface ServiceStatsResponse {
+  totalServices: number;
+  activeServices: number;
+  totalBookings: number;
+  totalRevenue: number;
+  averageRating: number;
+}

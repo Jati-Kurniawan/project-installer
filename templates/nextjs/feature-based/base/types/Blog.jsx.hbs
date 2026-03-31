@@ -1,0 +1,109 @@
+// Blog-related type definitions (JSDoc comments for JavaScript)
+
+/**
+ * @typedef {Object} BlogPost
+ * @property {number} id
+ * @property {string} title
+ * @property {string} slug
+ * @property {string} content
+ * @property {string} excerpt
+ * @property {string} [featuredImage]
+ * @property {PostStatus} status
+ * @property {string} [publishedAt]
+ * @property {string} createdAt
+ * @property {string} updatedAt
+ * @property {BlogAuthor} author
+ * @property {BlogCategory[]} categories
+ * @property {BlogTag[]} tags
+ * @property {PostMetadata} metadata
+ */
+
+/**
+ * @typedef {Object} BlogAuthor
+ * @property {number} id
+ * @property {string} name
+ * @property {string} email
+ * @property {string} [avatar]
+ * @property {string} [bio]
+ */
+
+/**
+ * @typedef {Object} BlogCategory
+ * @property {number} id
+ * @property {string} name
+ * @property {string} slug
+ * @property {string} [description]
+ * @property {string} [color]
+ */
+
+/**
+ * @typedef {Object} BlogTag
+ * @property {number} id
+ * @property {string} name
+ * @property {string} slug
+ */
+
+/**
+ * @typedef {Object} PostMetadata
+ * @property {number} readingTime - in minutes
+ * @property {number} wordCount
+ * @property {number} views
+ * @property {number} likes
+ * @property {number} comments
+ */
+
+/**
+ * @typedef {'draft' | 'published' | 'archived' | 'scheduled'} PostStatus
+ */
+
+/**
+ * @typedef {Object} CreateBlogPostRequest
+ * @property {string} title
+ * @property {string} content
+ * @property {string} [excerpt]
+ * @property {string} [featuredImage]
+ * @property {PostStatus} status
+ * @property {string} [publishedAt]
+ * @property {number[]} categoryIds
+ * @property {number[]} tagIds
+ */
+
+/**
+ * @typedef {Object} UpdateBlogPostRequest
+ * @property {string} [title]
+ * @property {string} [content]
+ * @property {string} [excerpt]
+ * @property {string} [featuredImage]
+ * @property {PostStatus} [status]
+ * @property {string} [publishedAt]
+ * @property {number[]} [categoryIds]
+ * @property {number[]} [tagIds]
+ */
+
+/**
+ * @typedef {Object} BlogPostsListResponse
+ * @property {BlogPost[]} posts
+ * @property {number} total
+ * @property {number} page
+ * @property {number} limit
+ * @property {BlogCategory[]} categories
+ * @property {BlogTag[]} tags
+ */
+
+/**
+ * @typedef {Object} BlogStatsResponse
+ * @property {number} totalPosts
+ * @property {number} publishedPosts
+ * @property {number} draftPosts
+ * @property {number} totalViews
+ * @property {number} totalLikes
+ * @property {number} totalComments
+ */
+
+// Post status constants
+export const PostStatus = {
+  DRAFT: 'draft',
+  PUBLISHED: 'published',
+  ARCHIVED: 'archived',
+  SCHEDULED: 'scheduled',
+};

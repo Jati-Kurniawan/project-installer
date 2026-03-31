@@ -1,0 +1,9 @@
+import { render, screen } from '@testing-library/react';
+import ComponentC from '../components/ComponentC';
+
+describe('ComponentC', () => {
+  it('renders correctly', () => {
+    render(<ComponentC />);
+    expect(screen.getByText('Component C')).toBeInTheDocument();
+  });
+});

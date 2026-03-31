@@ -20,18 +20,18 @@
     "@tanstack/react-query": "^5.0.0"{{/if}}
   },
   "devDependencies": {
-    {{#if (eq language "typescript")}}
+{{#if (eq language "typescript")}}
     "@types/node": "^20.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "typescript": "^5.0.0"{{#if options.devTools.includeESLint}},{{/if}}
-    {{/if}}
-    {{#if options.devTools.includeESLint}}
+    "typescript": "^5.0.0"{{#if options.devTools.includeESLint}},{{/if}}{{#if options.devTools.includePrettier}},{{/if}}
+{{/if}}
+{{#if options.devTools.includeESLint}}
     "eslint": "^8.0.0",
     "eslint-config-next": "^14.0.0"{{#if options.devTools.includePrettier}},{{/if}}
-    {{/if}}
-    {{#if options.devTools.includePrettier}}
+{{/if}}
+{{#if options.devTools.includePrettier}}
     "prettier": "^3.0.0"
-    {{/if}}
+{{/if}}
   }
 }

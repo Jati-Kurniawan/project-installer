@@ -1,0 +1,32 @@
+// Database client configuration
+// Replace this with your actual database client (Prisma, Drizzle, etc.)
+
+class DatabaseClient {
+  constructor(config) {
+    this.config = config;
+  }
+  
+  async connect() {
+    // Add your database connection logic here
+    console.log('Connecting to database:', this.config.url);
+  }
+  
+  async disconnect() {
+    // Add your database disconnection logic here
+    console.log('Disconnecting from database');
+  }
+  
+  async query(sql, params = []) {
+    // Add your query logic here
+    console.log('Executing query:', sql, params);
+    return [];
+  }
+}
+
+// Export a singleton instance
+const dbClient = new DatabaseClient({
+  url: process.env.DATABASE_URL || 'sqlite://./dev.db',
+  maxConnections: 10
+});
+
+export default dbClient;

@@ -1,0 +1,73 @@
+// User-related type definitions
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  avatar?: string;
+  role: UserRole;
+  createdAt: string;
+  updatedAt: string;
+  profile?: UserProfile;
+}
+
+export interface UserProfile {
+  bio?: string;
+  location?: string;
+  website?: string;
+  company?: string;
+  socialLinks?: SocialLinks;
+}
+
+export interface SocialLinks {
+  twitter?: string;
+  linkedin?: string;
+  github?: string;
+  instagram?: string;
+}
+
+export enum UserRole {
+  ADMIN = 'admin',
+  USER = 'user',
+  MODERATOR = 'moderator',
+}
+
+export interface CreateUserRequest {
+  name: string;
+  email: string;
+  password: string;
+  role?: UserRole;
+}
+
+export interface UpdateUserRequest {
+  name?: string;
+  email?: string;
+  avatar?: string;
+  profile?: Partial<UserProfile>;
+}
+
+export interface UserSession {
+  user: User;
+  token: string;
+  expiresAt: string;
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+  refreshToken: string;
+}
+
+// User-related API responses
+export interface UsersListResponse {
+  users: User[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface UserStatsResponse {
+  totalUsers: number;
+  activeUsers: number;
+  newUsersThisMonth: number;
+}

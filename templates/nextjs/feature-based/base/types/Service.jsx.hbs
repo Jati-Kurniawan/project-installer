@@ -1,0 +1,174 @@
+// Service-related type definitions (JSDoc comments for JavaScript)
+
+/**
+ * @typedef {Object} Service
+ * @property {number} id
+ * @property {string} name
+ * @property {string} slug
+ * @property {string} description
+ * @property {string} [shortDescription]
+ * @property {ServicePrice} price
+ * @property {number} [duration] - in minutes
+ * @property {ServiceCategory} category
+ * @property {ServiceTag[]} tags
+ * @property {ServiceFeature[]} features
+ * @property {ServiceStatus} status
+ * @property {boolean} featured
+ * @property {string} createdAt
+ * @property {string} updatedAt
+ * @property {ServiceMetadata} metadata
+ */
+
+/**
+ * @typedef {Object} ServicePrice
+ * @property {number} amount
+ * @property {string} currency
+ * @property {PriceType} type
+ * @property {BillingCycle} [billingCycle]
+ */
+
+/**
+ * @typedef {Object} ServiceCategory
+ * @property {number} id
+ * @property {string} name
+ * @property {string} slug
+ * @property {string} [description]
+ * @property {string} [icon]
+ */
+
+/**
+ * @typedef {Object} ServiceTag
+ * @property {number} id
+ * @property {string} name
+ * @property {string} slug
+ * @property {string} [color]
+ */
+
+/**
+ * @typedef {Object} ServiceFeature
+ * @property {number} id
+ * @property {string} name
+ * @property {string} [description]
+ * @property {boolean} included
+ */
+
+/**
+ * @typedef {Object} ServiceMetadata
+ * @property {number} views
+ * @property {number} bookings
+ * @property {number} rating
+ * @property {number} reviewCount
+ * @property {string} [seoTitle]
+ * @property {string} [seoDescription]
+ */
+
+/**
+ * @typedef {'active' | 'inactive' | 'draft'} ServiceStatus
+ */
+
+/**
+ * @typedef {'fixed' | 'hourly' | 'custom'} PriceType
+ */
+
+/**
+ * @typedef {'one_time' | 'monthly' | 'yearly' | 'weekly'} BillingCycle
+ */
+
+/**
+ * @typedef {Object} CreateServiceRequest
+ * @property {string} name
+ * @property {string} description
+ * @property {string} [shortDescription]
+ * @property {ServicePrice} price
+ * @property {number} [duration]
+ * @property {number} categoryId
+ * @property {number[]} [tagIds]
+ * @property {Omit<ServiceFeature, 'id'>[]} [features]
+ * @property {ServiceStatus} status
+ * @property {boolean} [featured]
+ */
+
+/**
+ * @typedef {Object} UpdateServiceRequest
+ * @property {string} [name]
+ * @property {string} [description]
+ * @property {string} [shortDescription]
+ * @property {ServicePrice} [price]
+ * @property {number} [duration]
+ * @property {number} [categoryId]
+ * @property {number[]} [tagIds]
+ * @property {ServiceFeature[]} [features]
+ * @property {ServiceStatus} [status]
+ * @property {boolean} [featured]
+ */
+
+/**
+ * @typedef {Object} ServiceBooking
+ * @property {number} id
+ * @property {number} serviceId
+ * @property {Service} service
+ * @property {string} customerName
+ * @property {string} customerEmail
+ * @property {string} [customerPhone]
+ * @property {string} scheduledAt
+ * @property {number} duration
+ * @property {number} totalPrice
+ * @property {BookingStatus} status
+ * @property {string} [notes]
+ * @property {string} createdAt
+ * @property {string} updatedAt
+ */
+
+/**
+ * @typedef {'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled'} BookingStatus
+ */
+
+/**
+ * @typedef {Object} ServicesListResponse
+ * @property {Service[]} services
+ * @property {number} total
+ * @property {number} page
+ * @property {number} limit
+ * @property {ServiceCategory[]} categories
+ * @property {ServiceTag[]} tags
+ */
+
+/**
+ * @typedef {Object} ServiceStatsResponse
+ * @property {number} totalServices
+ * @property {number} activeServices
+ * @property {number} totalBookings
+ * @property {number} totalRevenue
+ * @property {number} averageRating
+ */
+
+// Service status constants
+export const ServiceStatus = {
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+  DRAFT: 'draft',
+};
+
+// Price type constants
+export const PriceType = {
+  FIXED: 'fixed',
+  HOURLY: 'hourly',
+  CUSTOM: 'custom',
+};
+
+// Billing cycle constants
+export const BillingCycle = {
+  ONE_TIME: 'one_time',
+  MONTHLY: 'monthly',
+  YEARLY: 'yearly',
+  WEEKLY: 'weekly',
+};
+
+// Booking status constants
+export const BookingStatus = {
+  PENDING: 'pending',
+  CONFIRMED: 'confirmed',
+  IN_PROGRESS: 'in_progress',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+};

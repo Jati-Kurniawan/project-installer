@@ -1,0 +1,100 @@
+// API service functions
+// Replace these with your actual API endpoints and logic
+
+interface ApiResponse<T> {
+  data: T;
+  success: boolean;
+  message?: string;
+}
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  description: string;
+}
+
+/**
+ * Generic API request helper
+ */
+async function apiRequest<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<ApiResponse<T>> {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+  
+  try {
+    const response = await fetch(`${baseUrl}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return { data, success: true };
+  } catch (error) {
+    console.error('API request failed:', error);
+    return {
+      data: null as T,
+      success: false,
+      message: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Fetch user data
+ */
+export async function fetchUser(userId: number): Promise<ApiResponse<User>> {
+  return apiRequest<User>(`/users/${userId}`);
+}
+
+/**
+ * Fetch all users
+ */
+export async function fetchUsers(): Promise<ApiResponse<User[]>> {
+  return apiRequest<User[]>('/users');
+}
+
+/**
+ * Create a new user
+ */
+export async function createUser(userData: Omit<User, 'id'>): Promise<ApiResponse<User>> {
+  return apiRequest<User>('/users', {
+    method: 'POST',
+    body: JSON.stringify(userData),
+  });
+}
+
+/**
+ * Fetch product data
+ */
+export async function fetchProduct(productId: number): Promise<ApiResponse<Product>> {
+  return apiRequest<Product>(`/products/${productId}`);
+}
+
+/**
+ * Fetch all products
+ */
+export async function fetchProducts(): Promise<ApiResponse<Product[]>> {
+  return apiRequest<Product[]>('/products');
+}
+
+/**
+ * Search products
+ */
+export async function searchProducts(query: string): Promise<ApiResponse<Product[]>> {
+  return apiRequest<Product[]>(`/products/search?q=${encodeURIComponent(query)}`);
+}

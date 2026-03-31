@@ -1,0 +1,96 @@
+// Blog-related type definitions
+
+export interface BlogPost {
+  id: number;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  featuredImage?: string;
+  status: PostStatus;
+  publishedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  author: BlogAuthor;
+  categories: BlogCategory[];
+  tags: BlogTag[];
+  metadata: PostMetadata;
+}
+
+export interface BlogAuthor {
+  id: number;
+  name: string;
+  email: string;
+  avatar?: string;
+  bio?: string;
+}
+
+export interface BlogCategory {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  color?: string;
+}
+
+export interface BlogTag {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+export interface PostMetadata {
+  readingTime: number; // in minutes
+  wordCount: number;
+  views: number;
+  likes: number;
+  comments: number;
+}
+
+export enum PostStatus {
+  DRAFT = 'draft',
+  PUBLISHED = 'published',
+  ARCHIVED = 'archived',
+  SCHEDULED = 'scheduled',
+}
+
+export interface CreateBlogPostRequest {
+  title: string;
+  content: string;
+  excerpt?: string;
+  featuredImage?: string;
+  status: PostStatus;
+  publishedAt?: string;
+  categoryIds: number[];
+  tagIds: number[];
+}
+
+export interface UpdateBlogPostRequest {
+  title?: string;
+  content?: string;
+  excerpt?: string;
+  featuredImage?: string;
+  status?: PostStatus;
+  publishedAt?: string;
+  categoryIds?: number[];
+  tagIds?: number[];
+}
+
+// Blog-related API responses
+export interface BlogPostsListResponse {
+  posts: BlogPost[];
+  total: number;
+  page: number;
+  limit: number;
+  categories: BlogCategory[];
+  tags: BlogTag[];
+}
+
+export interface BlogStatsResponse {
+  totalPosts: number;
+  publishedPosts: number;
+  draftPosts: number;
+  totalViews: number;
+  totalLikes: number;
+  totalComments: number;
+}

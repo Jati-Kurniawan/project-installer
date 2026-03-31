@@ -1,0 +1,21 @@
+'use server';
+
+export async function searchProducts(query) {
+  // Add your search logic here
+  console.log('Searching for:', query);
+  
+  // Mock search results
+  return [
+    { id: 1, name: `Product matching ${query}`, price: 99.99 },
+    { id: 2, name: `Another ${query} product`, price: 149.99 },
+  ];
+}
+
+export async function searchUsers(query) {
+  // Add your user search logic here
+  console.log('Searching users for:', query);
+  
+  return [
+    { id: 1, name: `User ${query}`, email: `${query}@example.com` },
+  ];
+}

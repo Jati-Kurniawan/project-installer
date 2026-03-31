@@ -1,0 +1,32 @@
+import { Inter, Roboto_Mono, Playfair_Display } from 'next/font/google';
+
+// Primary font for body text
+export const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
+// Monospace font for code
+export const robotoMono = Roboto_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-roboto-mono',
+});
+
+// Display font for headings
+export const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-playfair-display',
+});
+
+// Font class names for Tailwind CSS
+export const fontVariables = `${inter.variable} ${robotoMono.variable} ${playfairDisplay.variable}`;
+
+// CSS custom properties for use in components
+export const fontClasses = {
+  sans: 'font-sans', // Uses Inter
+  mono: 'font-mono', // Uses Roboto Mono
+  display: 'font-display', // Uses Playfair Display
+};

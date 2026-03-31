@@ -1,0 +1,86 @@
+// User-related type definitions (JSDoc comments for JavaScript)
+
+/**
+ * @typedef {Object} User
+ * @property {number} id
+ * @property {string} name
+ * @property {string} email
+ * @property {string} [avatar]
+ * @property {UserRole} role
+ * @property {string} createdAt
+ * @property {string} updatedAt
+ * @property {UserProfile} [profile]
+ */
+
+/**
+ * @typedef {Object} UserProfile
+ * @property {string} [bio]
+ * @property {string} [location]
+ * @property {string} [website]
+ * @property {string} [company]
+ * @property {SocialLinks} [socialLinks]
+ */
+
+/**
+ * @typedef {Object} SocialLinks
+ * @property {string} [twitter]
+ * @property {string} [linkedin]
+ * @property {string} [github]
+ * @property {string} [instagram]
+ */
+
+/**
+ * @typedef {'admin' | 'user' | 'moderator'} UserRole
+ */
+
+/**
+ * @typedef {Object} CreateUserRequest
+ * @property {string} name
+ * @property {string} email
+ * @property {string} password
+ * @property {UserRole} [role]
+ */
+
+/**
+ * @typedef {Object} UpdateUserRequest
+ * @property {string} [name]
+ * @property {string} [email]
+ * @property {string} [avatar]
+ * @property {Partial<UserProfile>} [profile]
+ */
+
+/**
+ * @typedef {Object} UserSession
+ * @property {User} user
+ * @property {string} token
+ * @property {string} expiresAt
+ */
+
+/**
+ * @typedef {Object} AuthResponse
+ * @property {User} user
+ * @property {string} token
+ * @property {string} refreshToken
+ */
+
+/**
+ * @typedef {Object} UsersListResponse
+ * @property {User[]} users
+ * @property {number} total
+ * @property {number} page
+ * @property {number} limit
+ */
+
+/**
+ * @typedef {Object} UserStatsResponse
+ * @property {number} totalUsers
+ * @property {number} activeUsers
+ * @property {number} newUsersThisMonth
+ */
+
+// User role constants
+export const UserRole = {
+  ADMIN: 'admin',
+  USER: 'user',
+  MODERATOR: 'moderator',
+};

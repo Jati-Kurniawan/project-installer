@@ -1,0 +1,25 @@
+'use server';
+
+export async function signIn(formData: FormData) {
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+  
+  // Add your authentication logic here
+  console.log('Sign in attempt:', { email });
+  
+  // Redirect or return result
+}
+
+export async function signOut() {
+  // Add your sign out logic here
+  console.log('User signed out');
+}
+
+export async function signUp(formData: FormData) {
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+  const name = formData.get('name') as string;
+  
+  // Add your registration logic here
+  console.log('Sign up attempt:', { email, name });
+}

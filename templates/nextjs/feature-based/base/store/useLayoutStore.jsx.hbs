@@ -1,0 +1,101 @@
+{{#if options.stateManagement.includeZustand}}
+import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
+
+const initialState = {
+  sidebarOpen: false,
+  theme: 'light',
+  loading: false,
+};
+
+export const useLayoutStore = create(
+  devtools(
+    (set, get) => ({
+      ...initialState,
+      
+      toggleSidebar: () => set(
+        (state) => ({ sidebarOpen: !state.sidebarOpen }),
+        false,
+        'toggleSidebar'
+      ),
+      
+      setSidebarOpen: (open) => set(
+        { sidebarOpen: open },
+        false,
+        'setSidebarOpen'
+      ),
+      
+      setTheme: (theme) => set(
+        { theme },
+        false,
+        'setTheme'
+      ),
+      
+      setLoading: (loading) => set(
+        { loading },
+        false,
+        'setLoading'
+      ),
+      
+      reset: () => set(
+        initialState,
+        false,
+        'reset'
+      ),
+    }),
+    {
+      name: 'layout-store',
+    }
+  )
+);
+
+export default useLayoutStore;
+{{else}}
+// Layout state management without Zustand
+// You can implement this using React Context or other state management solutions
+
+import { useState, useCallback } from 'react';
+
+export function useLayoutStore() {
+  const [state, setState] = useState({
+    sidebarOpen: false,
+    theme: 'light',
+    loading: false,
+  });
+  
+  const toggleSidebar = useCallback(() => {
+    setState(prev => ({ ...prev, sidebarOpen: !prev.sidebarOpen }));
+  }, []);
+  
+  const setSidebarOpen = useCallback((open) => {
+    setState(prev => ({ ...prev, sidebarOpen: open }));
+  }, []);
+  
+  const setTheme = useCallback((theme) => {
+    setState(prev => ({ ...prev, theme }));
+  }, []);
+  
+  const setLoading = useCallback((loading) => {
+    setState(prev => ({ ...prev, loading }));
+  }, []);
+  
+  const reset = useCallback(() => {
+    setState({
+      sidebarOpen: false,
+      theme: 'light',
+      loading: false,
+    });
+  }, []);
+  
+  return {
+    ...state,
+    toggleSidebar,
+    setSidebarOpen,
+    setTheme,
+    setLoading,
+    reset,
+  };
+}
+
+export default useLayoutStore;
+{{/if}}
