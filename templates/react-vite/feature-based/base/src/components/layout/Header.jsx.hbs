@@ -1,0 +1,35 @@
+import { Link } from 'react-router-dom'
+
+export default function Header() {
+  return (
+    <header className="{{#if tailwind}}bg-white shadow-sm border-b{{else}}header{{/if}}">
+      <div className="{{#if tailwind}}container mx-auto px-4 py-4{{else}}header-content{{/if}}">
+        <div className="{{#if tailwind}}flex items-center justify-between{{else}}header-nav{{/if}}">
+          <Link to="/" className="{{#if tailwind}}text-xl font-bold text-gray-900 hover:text-gray-700{{else}}logo{{/if}}">
+            {{projectName}}
+          </Link>
+          <nav>
+            <ul className="{{#if tailwind}}flex space-x-6{{else}}nav-list{{/if}}">
+              <li>
+                <Link 
+                  to="/" 
+                  className="{{#if tailwind}}text-gray-600 hover:text-gray-900 transition-colors{{else}}nav-link{{/if}}"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/about" 
+                  className="{{#if tailwind}}text-gray-600 hover:text-gray-900 transition-colors{{else}}nav-link{{/if}}"
+                >
+                  About
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </header>
+  )
+}

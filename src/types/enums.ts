@@ -9,12 +9,13 @@ export enum Framework {
 /**
  * Template types for different frameworks
  */
-export type Template = 
-  | 'minimal' 
-  | 'feature-based' 
-  | 'dashboard' 
-  | 'basic-spa' 
-  | 'component-driven';
+export enum TemplateType {
+  MINIMAL = 'minimal',
+  FEATURE_BASED = 'feature-based',
+  DASHBOARD = 'dashboard',
+  BASIC_SPA = 'basic-spa',
+  COMPONENT_DRIVEN = 'component-driven'
+}
 
 /**
  * Supported programming languages

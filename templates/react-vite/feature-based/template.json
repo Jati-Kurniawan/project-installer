@@ -1,0 +1,93 @@
+{
+  "name": "Feature-Based React + Vite App",
+  "description": "A feature-based React application with Vite and modular structure, perfect for medium to large projects",
+  "framework": "react-vite",
+  "type": "feature-based",
+  "version": "1.0.0",
+  "author": "CLI Scaffolding Tool",
+  "supportedLanguages": ["typescript", "javascript"],
+  "supportedOptions": {
+    "styling": ["tailwind"],
+    "stateManagement": ["zustand"],
+    "dataFetching": ["tanstack-query"],
+    "devTools": ["eslint", "prettier"]
+  },
+  "dependencies": {
+    "base": {
+      "react": "^18.2.0",
+      "react-dom": "^18.2.0",
+      "react-router-dom": "^6.15.0"
+    },
+    "conditional": {
+      "typescript": {
+        "@types/react": "^18.2.0",
+        "@types/react-dom": "^18.2.0",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0",
+        "@vitejs/plugin-react": "^4.0.3",
+        "typescript": "^5.0.2",
+        "vite": "^4.4.5"
+      },
+      "javascript": {
+        "@vitejs/plugin-react": "^4.0.3",
+        "vite": "^4.4.5"
+      },
+      "tailwind": {
+        "tailwindcss": "^3.3.0",
+        "autoprefixer": "^10.4.16",
+        "postcss": "^8.4.31"
+      },
+      "zustand": {
+        "zustand": "^4.4.0"
+      },
+      "tanstack-query": {
+        "@tanstack/react-query": "^5.0.0"
+      },
+      "eslint": {
+        "eslint": "^8.45.0",
+        "eslint-plugin-react": "^7.32.2",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "eslint-plugin-react-refresh": "^0.4.3"
+      },
+      "prettier": {
+        "prettier": "^3.0.0"
+      }
+    }
+  },
+  "files": {
+    "base": [
+      "package.json.hbs",
+      "vite.config.{{ext}}.hbs",
+      "index.html.hbs",
+      "README.md.hbs",
+      "src/main.{{ext}}.hbs",
+      "src/App.{{ext}}.hbs",
+      "src/App.css",
+      "src/index.css",
+      "src/components/layout/Header.{{ext}}.hbs",
+      "src/components/layout/Footer.{{ext}}.hbs",
+      "src/components/ui/Button.{{ext}}.hbs",
+      "src/features/counter/components/Counter.{{ext}}.hbs",
+      "src/features/counter/hooks/useCounter.{{ext}}.hbs",
+      "src/pages/Home.{{ext}}.hbs",
+      "src/pages/About.{{ext}}.hbs",
+      "src/lib/utils.{{ext}}.hbs"
+    ],
+    "conditional": {
+      "typescript": [
+        "tsconfig.json",
+        "tsconfig.node.json"
+      ],
+      "tailwind": [
+        "tailwind.config.js",
+        "postcss.config.js"
+      ],
+      "eslint": [
+        ".eslintrc.cjs"
+      ],
+      "prettier": [
+        ".prettierrc"
+      ]
+    }
+  }
+}

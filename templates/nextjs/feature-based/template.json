@@ -1,0 +1,83 @@
+{
+  "name": "Feature-Based Next.js App",
+  "description": "A feature-based Next.js application with organized architecture, perfect for medium to large projects",
+  "framework": "nextjs",
+  "type": "feature-based",
+  "version": "1.0.0",
+  "author": "CLI Scaffolding Tool",
+  "supportedLanguages": ["typescript", "javascript"],
+  "supportedOptions": {
+    "styling": ["tailwind"],
+    "stateManagement": ["zustand"],
+    "dataFetching": ["tanstack-query"],
+    "devTools": ["eslint", "prettier"]
+  },
+  "dependencies": {
+    "base": {
+      "next": "^14.0.0",
+      "react": "^18.0.0",
+      "react-dom": "^18.0.0"
+    },
+    "conditional": {
+      "typescript": {
+        "@types/node": "^20.0.0",
+        "@types/react": "^18.0.0",
+        "@types/react-dom": "^18.0.0",
+        "typescript": "^5.0.0"
+      },
+      "tailwind": {
+        "tailwindcss": "^3.3.0",
+        "autoprefixer": "^10.4.16",
+        "postcss": "^8.4.31"
+      },
+      "zustand": {
+        "zustand": "^4.4.0"
+      },
+      "tanstack-query": {
+        "@tanstack/react-query": "^5.0.0"
+      },
+      "eslint": {
+        "eslint": "^8.0.0",
+        "eslint-config-next": "^14.0.0"
+      },
+      "prettier": {
+        "prettier": "^3.0.0"
+      }
+    }
+  },
+  "files": {
+    "base": [
+      "package.json.hbs",
+      "next.config.js.hbs",
+      "README.md.hbs",
+      "src/app/layout.{{ext}}.hbs",
+      "src/app/page.{{ext}}.hbs",
+      "src/app/globals.css",
+      "src/components/ui/Button.{{ext}}.hbs",
+      "src/components/layout/Header.{{ext}}.hbs",
+      "src/components/layout/Footer.{{ext}}.hbs",
+      "src/features/counter/components/Counter.{{ext}}.hbs",
+      "src/features/counter/hooks/useCounter.{{ext}}.hbs",
+      "src/lib/utils.{{ext}}.hbs"
+    ],
+    "conditional": {
+      "tanstack-query": [
+        "src/components/providers/QueryProvider.{{ext}}.hbs"
+      ],
+      "typescript": [
+        "tsconfig.json",
+        "next-env.d.ts"
+      ],
+      "tailwind": [
+        "tailwind.config.js",
+        "postcss.config.js"
+      ],
+      "eslint": [
+        ".eslintrc.json"
+      ],
+      "prettier": [
+        ".prettierrc"
+      ]
+    }
+  }
+}

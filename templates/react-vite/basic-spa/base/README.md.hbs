@@ -1,0 +1,97 @@
+# {{projectName}}
+
+A React application built with Vite{{#if language}} and {{#if (eq language "typescript")}}TypeScript{{else}}JavaScript{{/if}}{{/if}}.
+
+## Features
+
+- ⚡️ [Vite](https://vitejs.dev/) for fast development and building
+- ⚛️ [React 18](https://reactjs.org/) with modern hooks
+{{#if language}}
+{{#if (eq language "typescript")}}
+- 🔷 [TypeScript](https://www.typescriptlang.org/) for type safety
+{{/if}}
+{{/if}}
+{{#if options.styling.includeTailwind}}
+- 🎨 [Tailwind CSS](https://tailwindcss.com/) for utility-first styling
+{{/if}}
+{{#if options.stateManagement.includeZustand}}
+- 🐻 [Zustand](https://zustand-demo.pmnd.rs/) for lightweight state management
+{{/if}}
+{{#if options.dataFetching.includeTanStackQuery}}
+- 🔄 [TanStack Query](https://tanstack.com/query) for data fetching and caching
+{{/if}}
+{{#if options.devTools.includeESLint}}
+- 📏 [ESLint](https://eslint.org/) for code linting
+{{/if}}
+{{#if options.devTools.includePrettier}}
+- 💅 [Prettier](https://prettier.io/) for code formatting
+{{/if}}
+
+## Getting Started
+
+1. Install dependencies:
+   ```bash
+   {{#if (eq packageManager "npm")}}npm install{{/if}}{{#if (eq packageManager "yarn")}}yarn{{/if}}{{#if (eq packageManager "pnpm")}}pnpm install{{/if}}
+   ```
+
+2. Start the development server:
+   ```bash
+   {{#if (eq packageManager "npm")}}npm run dev{{/if}}{{#if (eq packageManager "yarn")}}yarn dev{{/if}}{{#if (eq packageManager "pnpm")}}pnpm dev{{/if}}
+   ```
+
+3. Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+## Available Scripts
+
+- `dev` - Start development server
+- `build` - Build for production
+- `preview` - Preview production build locally
+{{#if options.devTools.includeESLint}}
+- `lint` - Run ESLint
+{{/if}}
+
+## Project Structure
+
+```
+{{projectName}}/
+├── public/          # Static assets
+├── src/
+│   ├── components/  # React components
+{{#if options.stateManagement.includeZustand}}
+│   ├── stores/      # Zustand stores
+{{/if}}
+│   ├── App.{{#if (eq language "typescript")}}tsx{{else}}jsx{{/if}}       # Main App component
+│   ├── main.{{#if (eq language "typescript")}}tsx{{else}}jsx{{/if}}      # Application entry point
+│   └── index.css    # Global styles
+{{#if (eq language "typescript")}}
+├── tsconfig.json    # TypeScript configuration
+{{/if}}
+{{#if options.styling.includeTailwind}}
+├── tailwind.config.js # Tailwind CSS configuration
+├── postcss.config.js  # PostCSS configuration
+{{/if}}
+{{#if options.devTools.includeESLint}}
+├── .eslintrc.cjs    # ESLint configuration
+{{/if}}
+{{#if options.devTools.includePrettier}}
+├── .prettierrc      # Prettier configuration
+{{/if}}
+└── vite.config.{{#if (eq language "typescript")}}ts{{else}}js{{/if}}   # Vite configuration
+```
+
+## Learn More
+
+- [Vite Documentation](https://vitejs.dev/)
+- [React Documentation](https://reactjs.org/)
+{{#if (eq language "typescript")}}
+- [TypeScript Documentation](https://www.typescriptlang.org/)
+{{/if}}
+{{#if options.styling.includeTailwind}}
+- [Tailwind CSS Documentation](https://tailwindcss.com/)
+{{/if}}
+{{#if options.stateManagement.includeZustand}}
+- [Zustand Documentation](https://zustand-demo.pmnd.rs/)
+{{/if}}
+{{#if options.dataFetching.includeTanStackQuery}}
+- [TanStack Query Documentation](https://tanstack.com/query)
+{{/if}}

@@ -1,0 +1,36 @@
+export default function Button({ 
+  children, 
+  onClick, 
+  variant = 'primary', 
+  size = 'md',
+  disabled = false,
+  className = '',
+  ...props 
+}) {
+  const baseClasses = '{{#if tailwind}}inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none{{else}}btn{{/if}}'
+  
+  const variants = {
+    primary: '{{#if tailwind}}bg-blue-600 text-white hover:bg-blue-700{{else}}btn-primary{{/if}}',
+    secondary: '{{#if tailwind}}bg-gray-200 text-gray-900 hover:bg-gray-300{{else}}btn-secondary{{/if}}',
+    outline: '{{#if tailwind}}border border-gray-300 bg-transparent hover:bg-gray-50{{else}}btn-outline{{/if}}'
+  }
+  
+  const sizes = {
+    sm: '{{#if tailwind}}h-8 px-3 text-sm{{else}}btn-sm{{/if}}',
+    md: '{{#if tailwind}}h-10 px-4 py-2{{else}}btn-md{{/if}}',
+    lg: '{{#if tailwind}}h-12 px-6 text-lg{{else}}btn-lg{{/if}}'
+  }
+  
+  const combinedClassName = `${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`
+  
+  return (
+    <button
+      className={combinedClassName}
+      onClick={onClick}
+      disabled={disabled}
+      {...props}
+    >
+      {children}
+    </button>
+  )
+}

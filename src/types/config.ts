@@ -1,4 +1,4 @@
-import { Framework, Language, PackageManager, Template } from './enums';
+import { Framework, Language, PackageManager, TemplateType } from './enums';
 
 /**
  * User selections from interactive prompts
@@ -6,7 +6,7 @@ import { Framework, Language, PackageManager, Template } from './enums';
 export interface UserSelections {
   projectName: string;
   framework: Framework;
-  template: Template;
+  template: TemplateType;
   language: Language;
   includeTailwind: boolean;
   includeZustand: boolean;
@@ -23,7 +23,7 @@ export interface UserSelections {
 export interface ProjectConfig {
   projectName: string;
   framework: Framework;
-  template: Template;
+  template: TemplateType;
   language: Language;
   styling: StylingOptions;
   stateManagement: StateManagementOptions;

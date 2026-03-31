@@ -1,0 +1,45 @@
+{{#if options.stateManagement.includeZustand}}
+import { useCounterStore } from './stores/counter'
+{{/if}}
+import './App.css'
+
+function App() {
+{{#if options.stateManagement.includeZustand}}
+  const { count, increment, decrement } = useCounterStore()
+{{else}}
+  const count = 0
+{{/if}}
+
+  return (
+    <div className="{{#if options.styling.includeTailwind}}min-h-screen bg-gray-100 flex items-center justify-center{{else}}App{{/if}}">
+      <div className="{{#if options.styling.includeTailwind}}bg-white p-8 rounded-lg shadow-md text-center{{else}}card{{/if}}">
+        <h1 className="{{#if options.styling.includeTailwind}}text-3xl font-bold text-gray-800 mb-6{{/if}}">
+          Welcome to {{projectName}}
+        </h1>
+        <div className="{{#if options.styling.includeTailwind}}space-y-4{{/if}}">
+          <p className="{{#if options.styling.includeTailwind}}text-lg text-gray-600{{/if}}">
+            Count: <span className="{{#if options.styling.includeTailwind}}font-semibold text-blue-600{{/if}}">{count}</span>
+          </p>
+{{#if options.stateManagement.includeZustand}}
+          <div className="{{#if options.styling.includeTailwind}}space-x-4{{/if}}">
+            <button 
+              onClick={increment}
+              className="{{#if options.styling.includeTailwind}}bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded{{/if}}"
+            >
+              Increment
+            </button>
+            <button 
+              onClick={decrement}
+              className="{{#if options.styling.includeTailwind}}bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded{{/if}}"
+            >
+              Decrement
+            </button>
+          </div>
+{{/if}}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default App

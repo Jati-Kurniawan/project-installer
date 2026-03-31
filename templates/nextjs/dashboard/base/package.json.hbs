@@ -1,0 +1,31 @@
+{
+  "name": "{{projectName}}",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"{{#if prettier}},
+    "format": "prettier --write ."{{/if}}
+  },
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"{{#if zustand}},
+    "zustand": "^4.4.0"{{/if}}{{#if tanstackQuery}},
+    "@tanstack/react-query": "^5.0.0"{{/if}}{{#if tailwind}},
+    "tailwindcss": "^3.3.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31"{{/if}}
+  },
+  "devDependencies": {{{#if typescript}}
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^5.0.0"{{#if eslint}},{{/if}}{{/if}}{{#if eslint}}
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0"{{#if prettier}},{{/if}}{{/if}}{{#if prettier}}
+    "prettier": "^3.0.0"{{/if}}
+  }
+}

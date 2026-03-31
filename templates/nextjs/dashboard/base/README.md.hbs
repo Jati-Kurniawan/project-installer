@@ -1,0 +1,44 @@
+# {{projectName}}
+
+This is a dashboard [Next.js](https://nextjs.org/) project bootstrapped with the CLI Scaffolding Tool.
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+{{#if packageManager}}{{packageManager}}{{else}}npm{{/if}} run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Dashboard Features
+
+This dashboard includes:
+
+- **Main Dashboard**: Overview with statistics and charts
+- **User Management**: User listing and management interface
+- **Analytics**: Data visualization and reporting
+- **Responsive Layout**: Mobile-friendly sidebar navigation
+{{#if zustand}}
+- **State Management**: Zustand for global state
+{{/if}}
+{{#if tanstackQuery}}
+- **Data Fetching**: TanStack Query for server state
+{{/if}}
+
+## Project Structure
+
+- `src/app/` - Next.js App Router pages and layouts
+- `src/app/dashboard/` - Dashboard-specific pages
+- `src/components/dashboard/` - Dashboard layout components
+- `src/components/ui/` - Reusable UI components
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!

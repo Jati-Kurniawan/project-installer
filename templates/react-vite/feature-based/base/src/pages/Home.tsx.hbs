@@ -1,0 +1,64 @@
+import Counter from '../features/counter/components/Counter'
+
+export default function Home() {
+  return (
+    <div className="{{#if tailwind}}container mx-auto px-4 py-8{{else}}page{{/if}}">
+      <div className="{{#if tailwind}}text-center mb-8{{else}}page-header{{/if}}">
+        <h1 className="{{#if tailwind}}text-4xl font-bold text-gray-900 mb-4{{else}}page-title{{/if}}">
+          Welcome to {{projectName}}
+        </h1>
+        <p className="{{#if tailwind}}text-lg text-gray-600 max-w-2xl mx-auto{{else}}page-description{{/if}}">
+          A feature-based React application built with Vite and modern tools. 
+          This template provides a solid foundation for scalable web applications.
+        </p>
+      </div>
+      
+      <div className="{{#if tailwind}}max-w-4xl mx-auto{{else}}page-content{{/if}}">
+        <div className="{{#if tailwind}}grid grid-cols-1 md:grid-cols-2 gap-8 mb-8{{else}}features-grid{{/if}}">
+          <div className="{{#if tailwind}}bg-white p-6 rounded-lg shadow-sm border{{else}}feature-card{{/if}}">
+            <h3 className="{{#if tailwind}}text-xl font-semibold mb-3{{else}}feature-title{{/if}}">
+              🚀 Fast Development
+            </h3>
+            <p className="{{#if tailwind}}text-gray-600{{else}}feature-description{{/if}}">
+              Built with Vite for lightning-fast development and hot module replacement.
+            </p>
+          </div>
+          
+          <div className="{{#if tailwind}}bg-white p-6 rounded-lg shadow-sm border{{else}}feature-card{{/if}}">
+            <h3 className="{{#if tailwind}}text-xl font-semibold mb-3{{else}}feature-title{{/if}}">
+              🏗️ Feature-Based Architecture
+            </h3>
+            <p className="{{#if tailwind}}text-gray-600{{else}}feature-description{{/if}}">
+              Organized by features for better maintainability and scalability.
+            </p>
+          </div>
+          
+          <div className="{{#if tailwind}}bg-white p-6 rounded-lg shadow-sm border{{else}}feature-card{{/if}}">
+            <h3 className="{{#if tailwind}}text-xl font-semibold mb-3{{else}}feature-title{{/if}}">
+              🎨 Modern UI
+            </h3>
+            <p className="{{#if tailwind}}text-gray-600{{else}}feature-description{{/if}}">
+              {{#if tailwind}}Styled with Tailwind CSS for rapid UI development.{{else}}Clean and modern design with CSS modules.{{/if}}
+            </p>
+          </div>
+          
+          <div className="{{#if tailwind}}bg-white p-6 rounded-lg shadow-sm border{{else}}feature-card{{/if}}">
+            <h3 className="{{#if tailwind}}text-xl font-semibold mb-3{{else}}feature-title{{/if}}">
+              {{#if typescript}}📝 Type Safety{{else}}⚡ JavaScript{{/if}}
+            </h3>
+            <p className="{{#if tailwind}}text-gray-600{{else}}feature-description{{/if}}">
+              {{#if typescript}}Built with TypeScript for better developer experience and fewer bugs.{{else}}Modern JavaScript with ES6+ features and fast development.{{/if}}
+            </p>
+          </div>
+        </div>
+        
+        <div className="{{#if tailwind}}text-center{{else}}demo-section{{/if}}">
+          <h2 className="{{#if tailwind}}text-2xl font-bold mb-6{{else}}demo-title{{/if}}">
+            Interactive Demo
+          </h2>
+          <Counter />
+        </div>
+      </div>
+    </div>
+  )
+}

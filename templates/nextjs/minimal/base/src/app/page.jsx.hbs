@@ -1,0 +1,43 @@
+{{#if options.stateManagement.includeZustand}}
+import { useCounterStore } from '../stores/counter'
+{{/if}}
+
+export default function Home() {
+{{#if options.stateManagement.includeZustand}}
+  const { count, increment, decrement } = useCounterStore()
+{{/if}}
+
+  return (
+    <main{{#if options.styling.includeTailwind}} className="flex min-h-screen flex-col items-center justify-between p-24"{{/if}}>
+      <div{{#if options.styling.includeTailwind}} className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex"{{/if}}>
+        <h1{{#if options.styling.includeTailwind}} className="text-4xl font-bold text-center"{{/if}}>
+          Welcome to {{projectName}}
+        </h1>
+        <p{{#if options.styling.includeTailwind}} className="mt-4 text-xl text-center"{{/if}}>
+          Get started by editing{' '}
+          <code{{#if options.styling.includeTailwind}} className="font-mono font-bold"{{/if}}>src/app/page.{{#if (eq language "typescript")}}tsx{{else}}jsx{{/if}}</code>
+        </p>
+        
+        {{#if options.stateManagement.includeZustand}}
+        <div{{#if options.styling.includeTailwind}} className="mt-8 flex flex-col items-center gap-4"{{/if}}>
+          <p{{#if options.styling.includeTailwind}} className="text-2xl"{{/if}}>Count: {count}</p>
+          <div{{#if options.styling.includeTailwind}} className="flex gap-4"{{/if}}>
+            <button
+              onClick={increment}
+              {{#if options.styling.includeTailwind}}className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"{{/if}}
+            >
+              Increment
+            </button>
+            <button
+              onClick={decrement}
+              {{#if options.styling.includeTailwind}}className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"{{/if}}
+            >
+              Decrement
+            </button>
+          </div>
+        </div>
+        {{/if}}
+      </div>
+    </main>
+  )
+}

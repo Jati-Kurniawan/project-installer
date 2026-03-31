@@ -1,0 +1,34 @@
+{{#if zustand}}import { useCounterStore } from '../hooks/useCounter'{{else}}import { useCounter } from '../hooks/useCounter'{{/if}}
+import Button from '../../../components/ui/Button'
+
+export default function Counter() {
+{{#if zustand}}
+  const { count, increment, decrement, reset } = useCounterStore()
+{{else}}
+  const { count, increment, decrement, reset } = useCounter()
+{{/if}}
+
+  return (
+    <div className="{{#if tailwind}}bg-white p-6 rounded-lg shadow-md max-w-md mx-auto{{else}}counter-card{{/if}}">
+      <h2 className="{{#if tailwind}}text-2xl font-bold text-center mb-4{{else}}counter-title{{/if}}">
+        Counter Example
+      </h2>
+      <div className="{{#if tailwind}}text-center{{else}}counter-content{{/if}}">
+        <div className="{{#if tailwind}}text-4xl font-bold text-blue-600 mb-6{{else}}counter-display{{/if}}">
+          {count}
+        </div>
+        <div className="{{#if tailwind}}flex gap-2 justify-center{{else}}counter-buttons{{/if}}">
+          <Button onClick={decrement} variant="outline" size="sm">
+            -1
+          </Button>
+          <Button onClick={increment} size="sm">
+            +1
+          </Button>
+          <Button onClick={reset} variant="secondary" size="sm">
+            Reset
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}

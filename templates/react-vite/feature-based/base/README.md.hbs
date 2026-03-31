@@ -1,0 +1,63 @@
+# {{projectName}}
+
+This is a feature-based React + Vite application bootstrapped with the CLI Scaffolding Tool.
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+{{#if packageManager}}{{packageManager}}{{else}}npm{{/if}} run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) with your browser to see the result.
+
+## Project Structure
+
+This project follows a feature-based architecture:
+
+- `src/components/` - Reusable UI components
+- `src/features/` - Feature-specific components and logic
+- `src/pages/` - Page components for routing
+- `src/lib/` - Utility functions and configurations
+{{#if zustand}}
+- `src/stores/` - Zustand state management stores
+{{/if}}
+
+## Features
+
+- **React Router**: Client-side routing
+- **Feature-based Architecture**: Organized by features
+- **Reusable Components**: UI component library
+{{#if typescript}}
+- **TypeScript**: Type safety and better developer experience
+{{/if}}
+{{#if tailwind}}
+- **Tailwind CSS**: Utility-first CSS framework
+{{/if}}
+{{#if zustand}}
+- **Zustand**: Lightweight state management
+{{/if}}
+{{#if tanstackQuery}}
+- **TanStack Query**: Server state management
+{{/if}}
+
+## Available Scripts
+
+- `{{#if packageManager}}{{packageManager}}{{else}}npm{{/if}} run dev` - Start development server
+- `{{#if packageManager}}{{packageManager}}{{else}}npm{{/if}} run build` - Build for production
+- `{{#if packageManager}}{{packageManager}}{{else}}npm{{/if}} run preview` - Preview production build
+{{#if eslint}}
+- `{{#if packageManager}}{{packageManager}}{{else}}npm{{/if}} run lint` - Run ESLint
+{{/if}}
+{{#if prettier}}
+- `{{#if packageManager}}{{packageManager}}{{else}}npm{{/if}} run format` - Format code with Prettier
+{{/if}}
+
+## Learn More
+
+To learn more about the technologies used:
+
+- [React Documentation](https://reactjs.org/)
+- [Vite Documentation](https://vitejs.dev/)
+- [React Router Documentation](https://reactrouter.com/)
