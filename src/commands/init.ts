@@ -1,7 +1,6 @@
 import inquirer from 'inquirer';
 import { existsSync } from 'fs-extra';
-import { resolve } from 'path';
-import { CLIOptions, UserSelections, ProjectConfig, Framework, Language, TemplateType, PackageManager } from '../types';
+import { CLIOptions, UserSelections, ProjectConfig } from '../types';
 import { isValidProjectName, sanitizeProjectName } from '../utils/validation';
 import { isDirectoryEmpty, resolveProjectPath } from '../utils/file-system';
 import { PromptManager } from '../utils/prompts';
@@ -10,14 +9,23 @@ import { ProjectGenerator } from '../core/project-generator/generator';
 import { TemplateRegistry } from '../core/template-engine/registry';
 import { SuccessReporter } from '../core/reporting/success-reporter';
 import { GitService } from '../core/git/git-service';
+import { ConfigurationResolver } from '../core/config/resolver';
+import { ValidationEngine } from '../core/config/validator';
 
 export async function initCommand(projectName?: string, options: CLIOptions = {}): Promise<void> {
   console.log('🚀 Welcome to Starter CLI!');
   console.log('Let\'s create your new project...\n');
 
   try {
+    // Initialize all core components
     const promptManager = new PromptManager();
+    const configurationResolver = new ConfigurationResolver();
+    const validationEngine = new ValidationEngine();
     const dependencyInstaller = new DependencyInstaller();
+    const projectGenerator = new ProjectGenerator();
+    const templateRegistry = new TemplateRegistry();
+    const successReporter = new SuccessReporter();
+    const gitService = new GitService();
 
     // Step 1: Collect project name
     let finalProjectName = projectName;
@@ -25,18 +33,32 @@ export async function initCommand(projectName?: string, options: CLIOptions = {}
     if (!finalProjectName) {
       finalProjectName = await promptManager.collectProjectName();
     } else {
-      // Validate provided project name
-      if (!isValidProjectName(finalProjectName)) {
+      // Validate provided project name using ValidationEngine
+      const targetPath = resolveProjectPath('');
+      const nameValidation = validationEngine.validateProjectName(finalProjectName, targetPath);
+      
+      if (!nameValidation.isValid) {
         console.error(`❌ Invalid project name: "${finalProjectName}"`);
+        nameValidation.errors.forEach(error => {
+          console.error(`  • ${error.message}`);
+        });
         const sanitized = sanitizeProjectName(finalProjectName);
         console.log(`💡 Suggested name: "${sanitized}"`);
         process.exit(1);
       }
 
+      // Display warnings if any
+      if (nameValidation.warnings.length > 0) {
+        console.log('⚠️  Project name warnings:');
+        nameValidation.warnings.forEach(warning => {
+          console.log(`  • ${warning.message}`);
+        });
+      }
+
       // Check directory availability for provided name
-      const targetPath = resolveProjectPath(finalProjectName);
-      if (existsSync(targetPath)) {
-        const isEmpty = await isDirectoryEmpty(targetPath);
+      const targetPath2 = resolveProjectPath(finalProjectName);
+      if (existsSync(targetPath2)) {
+        const isEmpty = await isDirectoryEmpty(targetPath2);
         
         if (!isEmpty && !options.force) {
           const { proceed } = await inquirer.prompt([
@@ -92,7 +114,50 @@ export async function initCommand(projectName?: string, options: CLIOptions = {}
       initializeGit,
     };
 
-    // Step 9: Show configuration summary and confirm
+    // Step 9: Validate user selections using ValidationEngine
+    console.log('\n🔍 Validating configuration...');
+    const selectionValidation = validationEngine.validateUserSelections(userSelections);
+    
+    if (!selectionValidation.isValid) {
+      console.error('\n❌ Configuration validation failed:');
+      selectionValidation.errors.forEach(error => {
+        console.error(`  • ${error.field}: ${error.message}`);
+      });
+      process.exit(1);
+    }
+
+    // Display warnings if any
+    if (selectionValidation.warnings.length > 0) {
+      console.log('\n⚠️  Configuration warnings:');
+      selectionValidation.warnings.forEach(warning => {
+        console.log(`  • ${warning.field}: ${warning.message}`);
+      });
+    }
+
+    // Step 10: Resolve configuration using ConfigurationResolver
+    const projectConfig = configurationResolver.resolveConfiguration(userSelections);
+
+    // Step 11: Perform comprehensive validation
+    const targetPath = resolveProjectPath(finalProjectName);
+    const completeValidation = validationEngine.validateComplete(projectConfig, targetPath);
+    
+    if (!completeValidation.isValid) {
+      console.error('\n❌ Final validation failed:');
+      completeValidation.errors.forEach(error => {
+        console.error(`  • ${error.field}: ${error.message}`);
+      });
+      process.exit(1);
+    }
+
+    // Display final warnings
+    if (completeValidation.warnings.length > 0) {
+      console.log('\n⚠️  Final warnings:');
+      completeValidation.warnings.forEach(warning => {
+        console.log(`  • ${warning.field}: ${warning.message}`);
+      });
+    }
+
+    // Step 12: Show configuration summary and confirm
     const confirmed = await promptManager.confirmConfiguration(userSelections);
     
     if (!confirmed) {
@@ -100,8 +165,7 @@ export async function initCommand(projectName?: string, options: CLIOptions = {}
       process.exit(0);
     }
 
-    // Step 10: Display next steps
-    const targetPath = resolveProjectPath(finalProjectName);
+    // Step 13: Display next steps
     console.log('\n✅ Configuration complete!');
     console.log(`📁 Target directory: ${targetPath}`);
     
@@ -115,46 +179,23 @@ export async function initCommand(projectName?: string, options: CLIOptions = {}
     
     console.log('\n🚀 Starting project generation...');
     
-    // Step 11: Initialize components
-    const projectGenerator = new ProjectGenerator();
-    const templateRegistry = new TemplateRegistry();
-    const successReporter = new SuccessReporter();
-    const gitService = new GitService();
-    
-    // Step 12: Convert UserSelections to ProjectConfig
-    const projectConfig: ProjectConfig = {
-      projectName: userSelections.projectName,
-      framework: userSelections.framework,
-      template: userSelections.template,
-      language: userSelections.language,
-      styling: { includeTailwind: userSelections.includeTailwind },
-      stateManagement: { includeZustand: userSelections.includeZustand },
-      dataFetching: { includeTanStackQuery: userSelections.includeTanStackQuery },
-      devTools: { 
-        includeESLint: userSelections.includeESLint,
-        includePrettier: userSelections.includePrettier 
-      },
-      packageManager: userSelections.packageManager,
-      gitInit: userSelections.initializeGit,
-    };
-    
-    // Step 13: Load template
+    // Step 14: Load template
     console.log('📋 Loading template...');
-    const templateDefinition = await templateRegistry.loadTemplate(userSelections.framework, userSelections.template);
+    const templateDefinition = await templateRegistry.loadTemplate(projectConfig.framework, projectConfig.template);
     
-    // Step 14: Generate project
+    // Step 15: Generate project
     console.log('🔨 Generating project files...');
     const result = await projectGenerator.generateProject(projectConfig, templateDefinition);
     
     if (result.success) {
-      // Step 14.5: Generate package.json with resolved dependencies
+      // Step 16: Generate package.json with resolved dependencies
       console.log('📦 Generating package.json with dependencies...');
       await dependencyInstaller.generatePackageJson(projectConfig, templateDefinition, result.projectPath);
       
       let installResult;
       let gitResult;
       
-      // Step 15: Install dependencies (if not skipped)
+      // Step 17: Install dependencies (if not skipped)
       if (!options.skipInstall) {
         console.log('\n📦 Installing dependencies...');
         installResult = await dependencyInstaller.installDependencies(projectConfig, result.projectPath);
@@ -162,13 +203,13 @@ export async function initCommand(projectName?: string, options: CLIOptions = {}
         if (!installResult.success) {
           console.log('⚠️  Dependency installation failed, but project was created successfully.');
           console.log('You can install dependencies manually by running:');
-          console.log(`  cd ${userSelections.projectName}`);
-          console.log(`  ${userSelections.packageManager} install`);
+          console.log(`  cd ${projectConfig.projectName}`);
+          console.log(`  ${projectConfig.packageManager} install`);
         }
       }
       
-      // Step 16: Handle Git initialization if not already done by ProjectGenerator
-      if (userSelections.initializeGit) {
+      // Step 18: Handle Git initialization if not already done by ProjectGenerator
+      if (projectConfig.gitInit) {
         console.log('\n🔧 Setting up Git repository...');
         
         // Check if Git was already initialized by ProjectGenerator
@@ -191,7 +232,7 @@ export async function initCommand(projectName?: string, options: CLIOptions = {}
         }
       }
       
-      // Step 17: Display comprehensive success summary
+      // Step 19: Display comprehensive success summary
       await successReporter.displaySuccessSummary(
         projectConfig,
         result,

@@ -6,15 +6,25 @@
   "bin": {
     "starter-cli": "./dist/bin/cli.js"
   },
+  "files": [
+    "dist/",
+    "templates/",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
+    "build:prod": "npm run clean && tsc --project tsconfig.build.json",
     "dev": "tsc --watch",
     "start": "node dist/bin/cli.js",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run build:prod && npm test",
+    "postinstall": "node -e \"console.log('\\n🚀 Starter CLI installed successfully!\\n\\nGet started with: starter-cli init\\n')\""
   },
   "keywords": [
     "cli",
@@ -23,10 +33,21 @@
     "react",
     "vite",
     "typescript",
-    "template"
+    "template",
+    "generator",
+    "boilerplate",
+    "starter"
   ],
-  "author": "",
+  "author": "Starter CLI Team",
   "license": "MIT",
+  "homepage": "https://github.com/starter-cli/starter-cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/starter-cli/starter-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/starter-cli/starter-cli/issues"
+  },
   "engines": {
     "node": ">=18.0.0"
   },
