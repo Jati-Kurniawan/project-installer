@@ -24,14 +24,14 @@
     "@types/node": "^20.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "typescript": "^5.0.0"{{#if options.devTools.includeESLint}},{{/if}}{{#if options.devTools.includePrettier}},{{/if}}
+    "typescript": "^5.0.0"
 {{/if}}
 {{#if options.devTools.includeESLint}}
-    "eslint": "^8.0.0",
-    "eslint-config-next": "^14.0.0"{{#if options.devTools.includePrettier}},{{/if}}
+{{#if (eq language "typescript")}}    ,{{/if}}"eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0"
 {{/if}}
 {{#if options.devTools.includePrettier}}
-    "prettier": "^3.0.0"
+{{#if (eq language "typescript")}}    ,{{/if}}{{#if options.devTools.includeESLint}}    ,{{/if}}"prettier": "^3.0.0"
 {{/if}}
   }
 }
