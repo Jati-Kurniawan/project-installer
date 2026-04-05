@@ -9,38 +9,38 @@ The CLI Scaffolding Tool follows a modular, layered architecture designed for ma
 ```
 src/
 ├── bin/                    # CLI entry points
-│   └── cli.ts             # Main CLI executable
-├── lib/                   # Library exports
-│   └── index.ts          # Main library entry point
-├── core/                  # Core business logic
-│   ├── config/           # Configuration management
-│   │   ├── resolver.ts   # Configuration resolver
-│   │   └── validator.ts  # Validation engine
-│   ├── template-engine/  # Template processing
-│   │   ├── processor.ts  # Template processor
-│   │   └── registry.ts   # Template registry
-│   └── project-generator/ # Project generation
-│       ├── generator.ts   # Project generator
+│   └── cli.ts              # Main CLI executable
+├── lib/                    # Library exports
+│   └── index.ts            # Main library entry point
+├── core/                   # Core business logic
+│   ├── config/             # Configuration management
+│   │   ├── resolver.ts     # Configuration resolver
+│   │   └── validator.ts    # Validation engine
+│   ├── template-engine/    # Template processing
+│   │   ├── processor.ts    # Template processor
+│   │   └── registry.ts     # Template registry
+│   └── project-generator/  # Project generation
+│       ├── generator.ts    # Project generator
 │       └── dependency-installer.ts # Dependency installer
-├── commands/             # CLI commands
-│   ├── index.ts         # Commands exports
-│   └── init.ts          # Init command implementation
-├── utils/               # Utility functions
-│   ├── file-system.ts   # File system utilities
-│   ├── validation.ts    # Validation utilities
-│   ├── prompts.ts       # Interactive prompts
-│   └── logger.ts        # Logging utilities
-├── types/               # TypeScript type definitions
-│   ├── config.ts        # Configuration types
-│   ├── enums.ts         # Enums and constants
-│   ├── template.ts      # Template types
-│   ├── validation.ts    # Validation types
-│   └── generation.ts    # Generation types
-├── __tests__/           # Test files
-│   ├── cli.test.ts      # CLI tests
-│   ├── commands/        # Command tests
-│   └── utils/           # Utility tests
-└── index.ts             # Main library entry
+├── commands/               # CLI commands
+│   ├── index.ts            # Commands exports
+│   └── init.ts             # Init command implementation
+├── utils/                  # Utility functions
+│   ├── file-system.ts      # File system utilities
+│   ├── validation.ts       # Validation utilities
+│   ├── prompts.ts          # Interactive prompts
+│   └── logger.ts           # Logging utilities
+├── types/                  # TypeScript type definitions
+│   ├── config.ts           # Configuration types
+│   ├── enums.ts            # Enums and constants
+│   ├── template.ts         # Template types
+│   ├── validation.ts       # Validation types
+│   └── generation.ts       # Generation types
+├── __tests__/              # Test files
+│   ├── cli.test.ts         # CLI tests
+│   ├── commands/           # Command tests
+│   └── utils/              # Utility tests
+└── index.ts                # Main library entry
 ```
 
 ## Architecture Layers
@@ -117,16 +117,4 @@ Clear separation allows for easy unit testing and mocking.
 2. Add command registration in `bin/cli.ts`
 3. Add tests in `__tests__/commands/`
 
-### Adding New Templates
-1. Create template directory structure
-2. Add template metadata
-3. Update template registry
-4. Add template-specific types
-
-### Adding New Frameworks
-1. Add framework enum value
-2. Create framework-specific templates
-3. Update validation logic
-4. Add framework-specific configuration
-
-This architecture provides a solid foundation for the CLI tool while maintaining flexibility for future enhancements.
+### Adding 
